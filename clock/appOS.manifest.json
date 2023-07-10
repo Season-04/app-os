@@ -1,0 +1,16 @@
+{
+  "id": "appos.test.clock",
+  "name": "Test Clock",
+  "image": "appos-test-clock",
+  "schemas": {
+    "provides": [
+      {
+        "id": "appos.test.clock.ClockService",
+        "type": "gRPC",
+        "port": 8080,
+        "definition": "schemas/clock.proto"
+      }
+    ],
+    "dependencies": []
+  }
+}

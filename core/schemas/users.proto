@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package appos.core;
+option go_package = "github.com/staugaard/app-os/core/pb";
+
+service UsersService {
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
+  rpc GetById (GetUserByIdRequest) returns (GetUserByIdResponse);
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email_address = 2;
+  string password = 3;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message GetUserByIdRequest {
+  uint32 id = 1;
+}
+
+message GetUserByIdResponse {
+  User user = 1;
+}
+
+message User {
+  uint32 id = 1;
+  string name = 2;
+  string email_address = 3;
+}

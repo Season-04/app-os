@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package appos.test.clock;
+option go_package = "github.com/staugaard/app-os/clock/pb";
+
+import "google/protobuf/timestamp.proto";
+
+service ClockService {
+  rpc GetTime (GetTimeRequest) returns (GetTimeResponse);
+}
+
+message GetTimeRequest {
+}
+
+message GetTimeResponse {
+  google.protobuf.Timestamp time = 1;
+}
