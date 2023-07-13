@@ -2,6 +2,28 @@
 
 version: '3'
 
+includes:
+  clock:
+    taskfile: ./clock
+    dir: ./clock
+  core:
+    taskfile: ./core
+    dir: ./core
+
 tasks:
+  create-network:
+    cmd: docker network create app-os
+    status:
+      - docker network inspect app-os
+
   run:
-    cmd: docker run -v ./config:/config appos-core
+    deps:
+      - create-network
+      - core:docker:build
+      - clock:docker:build
+    cmd: docker run --volume ./config:/config --volume /var/run/docker.sock:/var/run/docker.sock:ro --network app-os --name appos.core --rm appos-core
+
+  apps:install:
+    cmds:
+      - cp core/appOS.manifest.json  config/apps.enabled/appos.core.json
+      - cp clock/appOS.manifest.json config/apps.enabled/appos.test.clock.json

@@ -1,0 +1,16 @@
+{
+  "id": "appos.core",
+  "name": "AppOS Core",
+  "image": "appos-core",
+  "schemas": {
+    "provides": [
+      {
+        "id": "appos.core.UsersService",
+        "type": "gRPC",
+        "port": 8080,
+        "definition": "schemas/users.proto"
+      }
+    ],
+    "dependencies": []
+  }
+}

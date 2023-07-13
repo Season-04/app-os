@@ -3,7 +3,7 @@ package users
 import (
 	"context"
 
-	"github.com/staugaard/app-os/core/pb"
+	"github.com/staugaard/app-os/core/internal/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

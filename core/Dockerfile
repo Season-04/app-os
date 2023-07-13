@@ -6,8 +6,8 @@ COPY go.mod go.sum /app/
 
 RUN go mod download
 
-COPY pb pb
-COPY users users
+COPY internal internal
+COPY manifest manifest
 COPY *.go /app/
 
 RUN go build -o /app/core .
