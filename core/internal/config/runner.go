@@ -1,4 +1,4 @@
-package runner
+package config
 
 import (
 	"context"
@@ -9,16 +9,10 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
-	"github.com/staugaard/app-os/core/internal/config"
 )
 
-func Run(ctx context.Context, cfg config.Config) error {
-	dockerClient, err := client.NewClientWithOpts(client.FromEnv)
-	if err != nil {
-		return err
-	}
-
-	for _, manifest := range cfg.Manifests {
+func (cfg *Config) Run(ctx context.Context, dockerClient client.ContainerAPIClient) error {
+	for _, manifest := range cfg.Manifests() {
 		containers, err := dockerClient.ContainerList(ctx, types.ContainerListOptions{
 			All:     true,
 			Filters: filters.NewArgs(filters.Arg("name", manifest.ID)),
@@ -61,4 +55,5 @@ func Run(ctx context.Context, cfg config.Config) error {
 	}
 
 	return nil
+
 }

@@ -6,9 +6,9 @@ import (
 	"net"
 	"os"
 
+	"github.com/docker/docker/client"
 	"github.com/staugaard/app-os/core/internal/config"
 	"github.com/staugaard/app-os/core/internal/pb"
-	"github.com/staugaard/app-os/core/internal/runner"
 	"github.com/staugaard/app-os/core/internal/users"
 	"google.golang.org/grpc"
 )
@@ -19,12 +19,18 @@ func main() {
 		configDirectory = "/config"
 	}
 
-	cfg, err := config.Load(configDirectory)
+	cfg := config.NewConfig(configDirectory)
+	err := cfg.Load()
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
-	err = runner.Run(context.Background(), *cfg)
+	dockerClient, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		log.Fatalf("failed to connect to docker: %v", err)
+	}
+
+	err = cfg.Run(context.Background(), dockerClient)
 	if err != nil {
 		log.Fatalf("failed to run: %v", err)
 	}

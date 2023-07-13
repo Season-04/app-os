@@ -8,30 +8,31 @@ import (
 	"github.com/staugaard/app-os/core/manifest"
 )
 
-func Load(directory string) (*Config, error) {
-	files, err := filepath.Glob(filepath.Join(directory, "apps.enabled/*.json"))
+func (cfg *Config) Load() error {
+	files, err := filepath.Glob(filepath.Join(cfg.Directory, "apps.enabled/*.json"))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	cfg := &Config{
-		Manifests: make([]manifest.Manifest, 0, len(files)),
-		Errors:    make([]ManifestError, 0),
-	}
+	cfg.mtx.Lock()
+	defer cfg.mtx.Unlock()
+
+	cfg.manifests = make([]manifest.Manifest, 0, len(files))
+	cfg.errors = make([]ManifestError, 0)
 
 	for _, file := range files {
 		manifest := manifest.Manifest{}
 		bytes, err := ioutil.ReadFile(file)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		err = json.Unmarshal(bytes, &manifest)
 		if err != nil {
-			cfg.Errors = append(cfg.Errors, ManifestError{Path: file, Error: err})
+			cfg.errors = append(cfg.errors, ManifestError{Path: file, Error: err})
 		} else {
-			cfg.Manifests = append(cfg.Manifests, manifest)
+			cfg.manifests = append(cfg.manifests, manifest)
 		}
 	}
 
-	return cfg, nil
+	return nil
 }
