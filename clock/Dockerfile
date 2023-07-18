@@ -12,5 +12,6 @@ COPY *.go /app/
 RUN go build -o /app/clock .
 
 EXPOSE 8080
+EXPOSE 8081
 
 CMD [ "/app/clock" ]

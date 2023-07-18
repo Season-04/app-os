@@ -12,5 +12,10 @@
       }
     ],
     "dependencies": []
+  },
+  "routes": {
+    "/clock": {
+      "port": 8081
+    }
   }
 }
