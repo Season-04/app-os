@@ -1,0 +1,10 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  docker:build:
+    cmd: docker build -t appos-core-frontend .
+
+  install:
+    cmd: cp appOS.manifest.json ../config/apps.enabled/appos.core.frontend.json 

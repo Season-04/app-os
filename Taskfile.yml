@@ -9,6 +9,9 @@ includes:
   core:
     taskfile: ./core
     dir: ./core
+  core-frontend:
+    taskfile: ./core-frontend
+    dir: ./core-frontend
 
 tasks:
   create-network:
@@ -20,7 +23,11 @@ tasks:
     deps:
       - create-network
       - core:docker:build
+      - core:install
+      - core-frontend:docker:build
+      - core-frontend:install
       - clock:docker:build
+      - clock:install
     cmd: docker run --volume ./config:/config --volume /var/run/docker.sock:/var/run/docker.sock:ro --network app-os --name appos.core --rm appos-core
 
   apps:install:

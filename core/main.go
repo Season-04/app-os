@@ -5,8 +5,10 @@ import (
 	"log"
 	"net"
 	"os"
+	"sync"
 
 	"github.com/docker/docker/client"
+	"github.com/staugaard/app-os/core/internal/auth"
 	"github.com/staugaard/app-os/core/internal/config"
 	"github.com/staugaard/app-os/core/internal/pb"
 	"github.com/staugaard/app-os/core/internal/users"
@@ -14,6 +16,26 @@ import (
 )
 
 func main() {
+	runCFG()
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		runGRPC()
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		auth.RunHTTPServer()
+	}()
+
+	wg.Wait()
+}
+
+func runCFG() {
 	configDirectory := os.Getenv("APP_OS_CONFIG_DIRECTORY")
 	if configDirectory == "" {
 		configDirectory = "/config"
@@ -34,7 +56,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to run: %v", err)
 	}
+}
 
+func runGRPC() {
 	s := grpc.NewServer()
 	pb.RegisterUsersServiceServer(s, &users.Server{})
 
@@ -43,10 +67,10 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	log.Printf("Listening at %s", lis.Addr().String())
+	log.Printf("Listening gRPC at %s", lis.Addr().String())
 
 	err = s.Serve(lis)
 	if err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Fatalf("failed to serve gRPC: %v", err)
 	}
 }
