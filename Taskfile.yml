@@ -22,13 +22,17 @@ tasks:
   run:
     deps:
       - create-network
+      - core:docker:rm
       - core:docker:build
       - core:install
+      - core-frontend:docker:rm
       - core-frontend:docker:build
       - core-frontend:install
+      - clock:docker:rm
       - clock:docker:build
       - clock:install
-    cmd: docker run --volume ./config:/config --volume /var/run/docker.sock:/var/run/docker.sock:ro --network app-os --name appos.core --rm appos-core
+    cmds:
+      - task: core:docker:run
 
   apps:install:
     cmds:

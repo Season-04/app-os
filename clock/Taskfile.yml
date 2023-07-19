@@ -9,6 +9,9 @@ tasks:
 
   docker:build:
     cmd: docker build -t appos-test-clock .
+  
+  docker:rm:
+    cmd: docker container rm appos.test.clock -f
 
   install:
     cmd: cp appOS.manifest.json ../config/apps.enabled/appos.test.clock.json 

@@ -10,5 +10,16 @@ tasks:
   docker:build:
     cmd: docker build -t appos-core .
 
+  docker:rm:
+    cmds:
+      - docker container rm appos-traefik -f
+      - docker container rm appos.core -f
+
+  docker:run:
+    cmd: docker run --volume {{.CONFIG_DIR}}:/config --volume /var/run/docker.sock:/var/run/docker.sock:ro --network app-os --env CONFIG_DIR={{.CONFIG_DIR}} --name appos.core --rm appos-core
+    vars:
+      CONFIG_DIR:
+        sh: readlink -f ../config
+
   install:
     cmd: cp appOS.manifest.json ../config/apps.enabled/appos.core.json 

@@ -6,6 +6,8 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/docker/docker/api/types"
@@ -22,8 +24,22 @@ type DockerClient interface {
 	client.ImageAPIClient
 }
 
+func (cfg *Config) hostConfigDir() string {
+	configRoot := os.Getenv("CONFIG_DIR")
+	if configRoot == "" {
+		panic("Missing CONFIG_DIR envoronment variable")
+	}
+	return configRoot
+}
+
 func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 	for _, manifest := range cfg.Manifests() {
+		relativeAppDataPath := filepath.Join("app-data", manifest.ID)
+		err := os.MkdirAll(filepath.Join(cfg.Directory, relativeAppDataPath), 0777)
+		if err != nil {
+			return err
+		}
+
 		containers, err := dockerClient.ContainerList(ctx, types.ContainerListOptions{
 			Filters: filters.NewArgs(filters.Arg("name", manifest.ID)),
 		})
@@ -45,6 +61,8 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 				labels[fmt.Sprintf("traefik.http.routers.%s.entrypoints", routeName)] = "web"
 				labels[fmt.Sprintf("traefik.http.routers.%s.service", routeName)] = routeName
 				labels[fmt.Sprintf("traefik.http.routers.%s.rule", routeName)] = fmt.Sprintf("PathPrefix(`%s`)", path)
+				labels[fmt.Sprintf("traefik.http.routers.%s.middlewares", routeName)] = "appos-auth"
+				labels["traefik.http.middlewares.appos-auth.forwardauth.address"] = "http://appos.core:3000/auth/check"
 			}
 
 			log.Println("Creating container for", manifest.ID)
@@ -57,6 +75,13 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 				},
 				&container.HostConfig{
 					NetworkMode: "app-os",
+					Mounts: []mount.Mount{
+						{
+							Type:   mount.TypeBind,
+							Source: filepath.Join(cfg.hostConfigDir(), relativeAppDataPath),
+							Target: "/data",
+						},
+					},
 				},
 				&network.NetworkingConfig{},
 				nil,
