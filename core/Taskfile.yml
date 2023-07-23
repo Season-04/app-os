@@ -7,6 +7,9 @@ tasks:
     cmds:
       - protoc --proto_path=./schemas --go_opt=paths=source_relative --go_out=./internal/pb --go-grpc_out=./internal/pb --go-grpc_opt=paths=source_relative ./schemas/users.proto
 
+  graphql:generate:
+    cmd: go run github.com/99designs/gqlgen generate
+
   docker:build:
     cmd: docker build -t appos-core .
 

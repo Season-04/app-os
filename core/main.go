@@ -4,12 +4,16 @@ import (
 	"context"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"sync"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/docker/docker/client"
 	"github.com/staugaard/app-os/core/internal/auth"
 	"github.com/staugaard/app-os/core/internal/config"
+	"github.com/staugaard/app-os/core/internal/graph"
 	"github.com/staugaard/app-os/core/internal/pb"
 	"github.com/staugaard/app-os/core/internal/users"
 	"google.golang.org/grpc"
@@ -75,5 +79,21 @@ func runGRPC(usersServer pb.UsersServiceServer) {
 	err = s.Serve(lis)
 	if err != nil {
 		log.Fatalf("failed to serve gRPC: %v", err)
+	}
+}
+
+func runHTTPServer() {
+	mux := http.NewServeMux()
+
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+
+	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	mux.Handle("/query", srv)
+
+	log.Printf("Listening HTTP at %v", 8081)
+
+	err := http.ListenAndServe(":8081", mux)
+	if err != nil {
+		log.Fatalf("failed to serve HTTP: %v", err)
 	}
 }
