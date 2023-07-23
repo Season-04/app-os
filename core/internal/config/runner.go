@@ -63,6 +63,7 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 				labels[fmt.Sprintf("traefik.http.routers.%s.rule", routeName)] = fmt.Sprintf("PathPrefix(`%s`)", path)
 				labels[fmt.Sprintf("traefik.http.routers.%s.middlewares", routeName)] = "appos-auth"
 				labels["traefik.http.middlewares.appos-auth.forwardauth.address"] = "http://appos.core:3000/auth/check"
+				labels["traefik.http.middlewares.appos-auth.forwardauth.authResponseHeaders"] = "X-AppOS-User-ID"
 			}
 
 			log.Println("Creating container for", manifest.ID)

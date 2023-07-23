@@ -1,0 +1,5 @@
+users:
+    - id: 1
+      name: Admin
+      email_address: admin@local
+      hashed_password: JDJhJDEwJEVIS1gxZnJ6Q2RPazRzS2NWTUZHTWVPU1g2QUM1eUZieXUxZ2YvaVBncFlGNjNOb2xneUJL

@@ -3,18 +3,34 @@ package auth
 import (
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/staugaard/app-os/core/internal/pb"
 )
 
 type server struct {
+	users pb.UsersServiceServer
 }
 
 func (s *server) check(w http.ResponseWriter, r *http.Request) {
 	log.Println("check")
-	w.WriteHeader(http.StatusOK)
+
+	resp, err := s.users.GetById(r.Context(), &pb.GetUserByIdRequest{Id: 1})
+	if err != nil {
+		log.Println("Failed to get user", err)
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte(err.Error()))
+	} else {
+		log.Println("Got user", resp.User.Id)
+		w.Header().Add("X-AppOS-User-ID", strconv.FormatUint(uint64(resp.User.Id), 10))
+		w.WriteHeader(http.StatusOK)
+	}
 }
 
-func RunHTTPServer() {
-	s := &server{}
+func RunHTTPServer(usersServer pb.UsersServiceServer) {
+	s := &server{
+		users: usersServer,
+	}
 
 	mux := http.NewServeMux()
 

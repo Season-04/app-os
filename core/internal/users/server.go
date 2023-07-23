@@ -10,14 +10,53 @@ import (
 
 type Server struct {
 	pb.UnimplementedUsersServiceServer
+	repo *Repository
+}
+
+func NewServer() *Server {
+	return &Server{
+		repo: NewRepository("/data"),
+	}
 }
 
 func (s *Server) CreateUser(ctx context.Context, r *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+	user := &User{
+		Name:         r.Name,
+		EmailAddress: r.EmailAddress,
+	}
+
+	err := s.repo.CreateUser(user, r.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CreateUserResponse{
+		User: userToProtobuf(user),
+	}, nil
 }
 
-func (s *Server) GetById(context.Context, *pb.GetUserByIdRequest) (*pb.GetUserByIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
+func (s *Server) GetById(ctx context.Context, r *pb.GetUserByIdRequest) (*pb.GetUserByIdResponse, error) {
+	user := s.repo.GetUserByID(r.Id)
+
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "There is no user with ID %v", r.Id)
+	}
+
+	return &pb.GetUserByIdResponse{
+		User: userToProtobuf(user),
+	}, nil
 }
 
 var _ pb.UsersServiceServer = &Server{}
+
+func userToProtobuf(user *User) *pb.User {
+	if user == nil {
+		return nil
+	}
+
+	return &pb.User{
+		Id:           user.ID,
+		Name:         user.Name,
+		EmailAddress: user.EmailAddress,
+	}
+}

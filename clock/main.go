@@ -63,7 +63,8 @@ func runHTTPServer() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/clock", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(fmt.Sprintf("it is %s", time.Now().String())))
+		userID := r.Header.Get("X-AppOS-User-ID")
+		w.Write([]byte(fmt.Sprintf("User %v, it is %s", userID, time.Now().String())))
 	})
 
 	log.Printf("Listening HTTP at %v", 8081)

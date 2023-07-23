@@ -18,18 +18,20 @@ import (
 func main() {
 	runCFG()
 
+	usersServer := users.NewServer()
+
 	var wg sync.WaitGroup
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		runGRPC()
+		runGRPC(usersServer)
 	}()
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		auth.RunHTTPServer()
+		auth.RunHTTPServer(usersServer)
 	}()
 
 	wg.Wait()
@@ -58,9 +60,10 @@ func runCFG() {
 	}
 }
 
-func runGRPC() {
+func runGRPC(usersServer pb.UsersServiceServer) {
 	s := grpc.NewServer()
-	pb.RegisterUsersServiceServer(s, &users.Server{})
+
+	pb.RegisterUsersServiceServer(s, usersServer)
 
 	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
