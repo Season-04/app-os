@@ -12,5 +12,10 @@
       }
     ],
     "dependencies": []
+  },
+  "routes": {
+    "/api/core": {
+      "port": 8081
+    }
   }
 }

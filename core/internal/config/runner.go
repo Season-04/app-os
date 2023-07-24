@@ -41,7 +41,7 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 		}
 
 		containers, err := dockerClient.ContainerList(ctx, types.ContainerListOptions{
-			Filters: filters.NewArgs(filters.Arg("name", manifest.ID)),
+			Filters: filters.NewArgs(filters.Arg("name", "^/"+manifest.ID+"$")),
 		})
 		if err != nil {
 			return err
@@ -98,14 +98,14 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 		// 	return err
 		// }
 
-		if manifest.ID != "appos.core" {
-			// if !stats.State.Running || manifest.ID != "appos.core" {
-			log.Println("(Re)starting container for", manifest.ID)
-			err = dockerClient.ContainerRestart(ctx, manifest.ID, container.StopOptions{})
-			if err != nil {
-				return err
-			}
+		// if manifest.ID != "appos.core" {
+		// if !stats.State.Running || manifest.ID != "appos.core" {
+		log.Println("(Re)starting container for", manifest.ID)
+		err = dockerClient.ContainerRestart(ctx, manifest.ID, container.StopOptions{})
+		if err != nil {
+			return err
 		}
+		// }
 	}
 
 	containers, err := dockerClient.ContainerList(ctx, types.ContainerListOptions{

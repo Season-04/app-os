@@ -32,7 +32,7 @@ tasks:
       - clock:docker:build
       - clock:install
     cmds:
-      - task: core:docker:run
+      - task: core:run
 
   apps:install:
     cmds:

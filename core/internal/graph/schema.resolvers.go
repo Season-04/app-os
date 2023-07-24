@@ -6,14 +6,27 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 
 	"github.com/staugaard/app-os/core/internal/graph/model"
+	"github.com/staugaard/app-os/core/internal/pb"
 )
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: Users - users"))
+	response, err := r.UsersService.List(ctx, &pb.ListRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	users := make([]*model.User, len(response.Users))
+	for i, user := range response.Users {
+		users[i] = &model.User{
+			ID:   strconv.FormatUint(uint64(user.Id), 10),
+			Name: user.Name,
+		}
+	}
+	return users, nil
 }
 
 // Query returns QueryResolver implementation.

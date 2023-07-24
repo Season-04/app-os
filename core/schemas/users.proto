@@ -6,6 +6,7 @@ option go_package = "github.com/staugaard/app-os/core/pb";
 service UsersService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
   rpc GetById (GetUserByIdRequest) returns (GetUserByIdResponse);
+  rpc List (ListRequest) returns (ListResponse);
 }
 
 message CreateUserRequest {
@@ -24,6 +25,12 @@ message GetUserByIdRequest {
 
 message GetUserByIdResponse {
   User user = 1;
+}
+
+message ListRequest {}
+
+message ListResponse {
+  repeated User users = 1;
 }
 
 message User {

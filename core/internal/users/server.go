@@ -47,6 +47,11 @@ func (s *Server) GetById(ctx context.Context, r *pb.GetUserByIdRequest) (*pb.Get
 	}, nil
 }
 
+func (s *Server) List(ctx context.Context, r *pb.ListRequest) (*pb.ListResponse, error) {
+	users := s.repo.ListAll()
+	return &pb.ListResponse{Users: usersToProtobuf(users)}, nil
+}
+
 var _ pb.UsersServiceServer = &Server{}
 
 func userToProtobuf(user *User) *pb.User {
@@ -59,4 +64,14 @@ func userToProtobuf(user *User) *pb.User {
 		Name:         user.Name,
 		EmailAddress: user.EmailAddress,
 	}
+}
+
+func usersToProtobuf(users []*User) []*pb.User {
+	pbUsers := make([]*pb.User, len(users))
+
+	for i, u := range users {
+		pbUsers[i] = userToProtobuf(u)
+	}
+
+	return pbUsers
 }

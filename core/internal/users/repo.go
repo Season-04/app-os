@@ -67,6 +67,13 @@ func (r *Repository) GetUserByID(ID uint32) *User {
 	return nil
 }
 
+func (r *Repository) ListAll() []*User {
+	r.usersMutex.RLock()
+	defer r.usersMutex.RUnlock()
+
+	return r.users
+}
+
 func (r *Repository) CreateUser(user *User, password string) error {
 	hashedPassword, err := hashPassword(password)
 	if err != nil {

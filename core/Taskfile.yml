@@ -28,3 +28,9 @@ tasks:
 
   install:
     cmd: cp appOS.manifest.json ../config/apps.enabled/appos.core.json 
+  
+  run:
+    cmd: APP_OS_CONFIG_DIRECTORY={{.CONFIG_DIR}} CONFIG_DIR={{.CONFIG_DIR}} go run . run
+    vars:
+      CONFIG_DIR:
+        sh: readlink -f ../config

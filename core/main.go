@@ -20,25 +20,38 @@ import (
 )
 
 func main() {
-	runCFG()
+	mode := "server"
+	if len(os.Args) > 1 {
+		mode = os.Args[1]
+	}
 
-	usersServer := users.NewServer()
+	if mode == "server" {
+		usersServer := users.NewServer()
 
-	var wg sync.WaitGroup
+		var wg sync.WaitGroup
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		runGRPC(usersServer)
-	}()
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			runGRPC(usersServer)
+		}()
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		auth.RunHTTPServer(usersServer)
-	}()
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			auth.RunHTTPServer(usersServer)
+		}()
 
-	wg.Wait()
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			runHTTPServer(usersServer)
+		}()
+
+		wg.Wait()
+	} else if mode == "run" {
+		runCFG()
+	}
 }
 
 func runCFG() {
@@ -82,13 +95,16 @@ func runGRPC(usersServer pb.UsersServiceServer) {
 	}
 }
 
-func runHTTPServer() {
+func runHTTPServer(usersServer pb.UsersServiceServer) {
 	mux := http.NewServeMux()
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	resolver := &graph.Resolver{
+		UsersService: usersServer,
+	}
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
 
-	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	mux.Handle("/query", srv)
+	mux.Handle("/api/core/graphiql", playground.Handler("GraphQL playground", "/api/core/graph"))
+	mux.Handle("/api/core/graph", srv)
 
 	log.Printf("Listening HTTP at %v", 8081)
 
