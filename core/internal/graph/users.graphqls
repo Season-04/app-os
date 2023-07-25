@@ -3,3 +3,17 @@ type User {
   name: String!
   emailAddress: String!
 }
+
+extend type Query {
+  users: [User!]
+}
+
+input CreateUserInput {
+  name: String!
+  emailAddress: String!
+  password: String!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput): User
+}

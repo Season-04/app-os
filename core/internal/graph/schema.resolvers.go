@@ -6,27 +6,11 @@ package graph
 
 import (
 	"context"
-	"strconv"
-
-	"github.com/staugaard/app-os/core/internal/graph/model"
-	"github.com/staugaard/app-os/core/internal/pb"
 )
 
-// Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	response, err := r.UsersService.List(ctx, &pb.ListRequest{})
-	if err != nil {
-		return nil, err
-	}
-
-	users := make([]*model.User, len(response.Users))
-	for i, user := range response.Users {
-		users[i] = &model.User{
-			ID:   strconv.FormatUint(uint64(user.Id), 10),
-			Name: user.Name,
-		}
-	}
-	return users, nil
+// Version is the resolver for the version field.
+func (r *queryResolver) Version(ctx context.Context) (string, error) {
+	return "1.0", nil
 }
 
 // Query returns QueryResolver implementation.
