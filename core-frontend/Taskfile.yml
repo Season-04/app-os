@@ -5,9 +5,9 @@ version: '3'
 tasks:
   docker:build:
     cmd: docker build -t appos-core-frontend .
-  
+
   docker:rm:
     cmd: docker container rm appos.core.frontend -f
 
   install:
-    cmd: cp appOS.manifest.json ../config/apps.enabled/appos.core.frontend.json 
+    cmd: cp appOS.manifest.json ../config/apps.enabled/appos.core.frontend.json
