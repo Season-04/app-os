@@ -13,7 +13,13 @@ COPY . /app
 RUN pnpm run build
 
 
-FROM nginx
+FROM busybox:1.35
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
+RUN adduser -D static
+USER static
+WORKDIR /home/static
+
+COPY --from=builder /app/dist ./
+
+# Run BusyBox httpd
+CMD ["busybox", "httpd", "-f", "-v", "-p", "3000"]

@@ -12,6 +12,9 @@ includes:
   core-frontend:
     taskfile: ./core-frontend
     dir: ./core-frontend
+  ui:
+    taskfile: ./ui
+    dir: ./ui
 
 tasks:
   create-network:
@@ -27,14 +30,12 @@ tasks:
       - core:install
       - core-frontend:docker:rm
       - core-frontend:docker:build
-      - core-frontend:install
+      # - core-frontend:install
       - clock:docker:rm
       - clock:docker:build
       - clock:install
+      - ui:docker:rm
+      - ui:docker:build
+      - ui:install
     cmds:
       - task: core:run
-
-  apps:install:
-    cmds:
-      - cp core/appOS.manifest.json  config/apps.enabled/appos.core.json
-      - cp clock/appOS.manifest.json config/apps.enabled/appos.test.clock.json

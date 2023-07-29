@@ -1,0 +1,10 @@
+{
+  "id": "appos.ui",
+  "name": "AppOS UI",
+  "image": "appos-ui",
+  "routes": {
+    "/appos-ui": {
+      "port": 3000
+    }
+  }
+}
