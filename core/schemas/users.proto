@@ -1,11 +1,16 @@
 syntax = "proto3";
 
 package appos.core;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/staugaard/app-os/core/pb";
 
 service UsersService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
   rpc GetById (GetUserByIdRequest) returns (GetUserByIdResponse);
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
   rpc List (ListRequest) returns (ListResponse);
 }
 
@@ -13,6 +18,7 @@ message CreateUserRequest {
   string name = 1;
   string email_address = 2;
   string password = 3;
+  UserRole role = 4;
 }
 
 message CreateUserResponse {
@@ -27,14 +33,32 @@ message GetUserByIdResponse {
   User user = 1;
 }
 
+message UpdateUserRequest {
+  uint32 id = 1;
+  google.protobuf.StringValue name = 2;
+  UserRole role = 3;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
+
 message ListRequest {}
 
 message ListResponse {
   repeated User users = 1;
 }
 
+enum UserRole {
+  USER_ROLE_UNSPECIFIED = 0;
+  USER_ROLE_ADMIN = 1;
+  USER_ROLE_USER = 2;
+}
+
 message User {
   uint32 id = 1;
   string name = 2;
   string email_address = 3;
+  UserRole role = 4;
+  google.protobuf.Timestamp lastSeenAt = 5;
 }

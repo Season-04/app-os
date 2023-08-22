@@ -6,6 +6,16 @@ import (
 	"github.com/staugaard/app-os/core/internal/pb"
 )
 
+var RoleToProtobuf = map[UserRole]pb.UserRole{
+	UserRoleAdmin: pb.UserRole_USER_ROLE_ADMIN,
+	UserRoleUser:  pb.UserRole_USER_ROLE_USER,
+}
+
+var RoleFromProtobuf = map[pb.UserRole]UserRole{
+	pb.UserRole_USER_ROLE_ADMIN: UserRoleAdmin,
+	pb.UserRole_USER_ROLE_USER:  UserRoleUser,
+}
+
 type User struct {
 	*pb.User
 }

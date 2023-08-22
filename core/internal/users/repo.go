@@ -6,7 +6,9 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
+	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/yaml.v3"
 )
@@ -37,6 +39,7 @@ func NewRepository(root string) *Repository {
 					Name:           "Admin",
 					EmailAddress:   "admin@local",
 					HashedPassword: adminPassword,
+					Role:           UserRoleAdmin,
 				},
 			},
 		}
@@ -85,8 +88,40 @@ func (r *Repository) CreateUser(user *User, password string) error {
 
 	r.usersMutex.Lock()
 	defer r.usersMutex.Unlock()
+
+	err = r.saveUsers(append(r.users, user))
+	if err != nil {
+		return err
+	}
+
+	r.maxUserID = user.ID
+	return nil
+}
+
+func (r *Repository) UpdateUser(user *User) error {
+	r.usersMutex.Lock()
+	defer r.usersMutex.Unlock()
+
+	var existingUser *User = nil
+	for _, u := range r.users {
+		if u.ID == user.ID {
+			existingUser = u
+		}
+	}
+
+	if existingUser == nil {
+		return errors.New("user not found")
+	}
+
+	existingUser.Name = user.Name
+	existingUser.Role = user.Role
+
+	return r.saveUsers(r.users)
+}
+
+func (r *Repository) saveUsers(users []*User) error {
 	data := &usersFile{
-		Users: append(r.users, user),
+		Users: users,
 	}
 	bytes, err := yaml.Marshal(data)
 	if err != nil {
@@ -99,15 +134,23 @@ func (r *Repository) CreateUser(user *User, password string) error {
 	}
 
 	r.users = data.Users
-	r.maxUserID = user.ID
 	return nil
 }
 
+type UserRole string
+
+var (
+	UserRoleAdmin UserRole = "admin"
+	UserRoleUser  UserRole = "user"
+)
+
 type User struct {
-	ID             uint32 `yaml:"id"`
-	Name           string `yaml:"name"`
-	EmailAddress   string `yaml:"email_address"`
-	HashedPassword string `yaml:"hashed_password"`
+	ID             uint32     `yaml:"id"`
+	Name           string     `yaml:"name"`
+	EmailAddress   string     `yaml:"email_address"`
+	HashedPassword string     `yaml:"hashed_password"`
+	Role           UserRole   `yaml:"role"`
+	LastSeenAt     *time.Time `yaml:"last_seen_at"`
 }
 
 type usersFile struct {

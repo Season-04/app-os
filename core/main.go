@@ -16,6 +16,7 @@ import (
 	"github.com/staugaard/app-os/core/internal/graph"
 	"github.com/staugaard/app-os/core/internal/pb"
 	"github.com/staugaard/app-os/core/internal/users"
+	"github.com/vektah/gqlparser/v2/formatter"
 	"google.golang.org/grpc"
 )
 
@@ -101,10 +102,14 @@ func runHTTPServer(usersServer pb.UsersServiceServer) {
 	resolver := &graph.Resolver{
 		UsersService: usersServer,
 	}
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
+	schema := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
+	srv := handler.NewDefaultServer(schema)
 
 	mux.Handle("/api/core/graphiql", playground.Handler("GraphQL playground", "/api/core/graph"))
 	mux.Handle("/api/core/graph", srv)
+	mux.HandleFunc("/api/core/graph/schema.graphql", func(w http.ResponseWriter, r *http.Request) {
+		formatter.NewFormatter(w).FormatSchema(schema.Schema())
+	})
 
 	log.Printf("Listening HTTP at %v", 8081)
 

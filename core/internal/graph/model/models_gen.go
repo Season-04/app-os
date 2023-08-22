@@ -2,8 +2,62 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type CreateUserInput struct {
-	Name         string `json:"name"`
-	EmailAddress string `json:"emailAddress"`
-	Password     string `json:"password"`
+	Name         string   `json:"name"`
+	EmailAddress string   `json:"emailAddress"`
+	Password     string   `json:"password"`
+	Role         UserRole `json:"role"`
+}
+
+type UpdateUserInput struct {
+	ID   string    `json:"id"`
+	Name *string   `json:"name,omitempty"`
+	Role *UserRole `json:"role,omitempty"`
+}
+
+type UserRole string
+
+const (
+	UserRoleAdmin UserRole = "ADMIN"
+	UserRoleUser  UserRole = "USER"
+)
+
+var AllUserRole = []UserRole{
+	UserRoleAdmin,
+	UserRoleUser,
+}
+
+func (e UserRole) IsValid() bool {
+	switch e {
+	case UserRoleAdmin, UserRoleUser:
+		return true
+	}
+	return false
+}
+
+func (e UserRole) String() string {
+	return string(e)
+}
+
+func (e *UserRole) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = UserRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid UserRole", str)
+	}
+	return nil
+}
+
+func (e UserRole) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

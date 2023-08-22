@@ -1,19 +1,35 @@
+enum UserRole {
+  ADMIN
+  USER
+}
+
 type User {
   id: ID!
   name: String!
   emailAddress: String!
+  role: UserRole!
+  lastSeenAt: Time
 }
 
 extend type Query {
   users: [User!]
+  user(id: ID!): User
 }
 
 input CreateUserInput {
   name: String!
   emailAddress: String!
   password: String!
+  role: UserRole!
+}
+
+input UpdateUserInput {
+  id: ID!
+  name: String
+  role: UserRole
 }
 
 type Mutation {
   createUser(input: CreateUserInput): User
+  updateUser(input: UpdateUserInput): User
 }
