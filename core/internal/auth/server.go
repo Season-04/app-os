@@ -14,15 +14,16 @@ type server struct {
 
 func (s *server) check(w http.ResponseWriter, r *http.Request) {
 	log.Println("check")
+	//log.Println(r.Header)
 
 	resp, err := s.users.GetById(r.Context(), &pb.GetUserByIdRequest{Id: 1})
 	if err != nil {
-		log.Println("Failed to get user", err)
+		log.Println("Failed to get user", err, "at path", r.Header.Get("X-Forwarded-Uri"))
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte(err.Error()))
 	} else {
-		log.Println("Got user", resp.User.Id)
-		w.Header().Add("X-AppOS-User-ID", strconv.FormatUint(uint64(resp.User.Id), 10))
+		log.Println("Got user", resp.User.Id, "at path", r.Header.Get("X-Forwarded-Uri"))
+		w.Header().Set("X-AppOS-User-ID", strconv.FormatUint(uint64(resp.User.Id), 10))
 		w.WriteHeader(http.StatusOK)
 	}
 }

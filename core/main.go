@@ -16,6 +16,7 @@ import (
 	"github.com/staugaard/app-os/core/internal/graph"
 	"github.com/staugaard/app-os/core/internal/pb"
 	"github.com/staugaard/app-os/core/internal/users"
+	"github.com/staugaard/app-os/core/middleware"
 	"github.com/vektah/gqlparser/v2/formatter"
 	"google.golang.org/grpc"
 )
@@ -99,14 +100,12 @@ func runGRPC(usersServer pb.UsersServiceServer) {
 func runHTTPServer(usersServer pb.UsersServiceServer) {
 	mux := http.NewServeMux()
 
-	resolver := &graph.Resolver{
-		UsersService: usersServer,
-	}
+	resolver := graph.NewResolver(usersServer)
 	schema := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
 	srv := handler.NewDefaultServer(schema)
 
 	mux.Handle("/api/core/graphiql", playground.Handler("GraphQL playground", "/api/core/graph"))
-	mux.Handle("/api/core/graph", srv)
+	mux.Handle("/api/core/graph", middleware.ToContext(srv.ServeHTTP))
 	mux.HandleFunc("/api/core/graph/schema.graphql", func(w http.ResponseWriter, r *http.Request) {
 		formatter.NewFormatter(w).FormatSchema(schema.Schema())
 	})

@@ -7,6 +7,7 @@ COPY go.mod go.sum /app/
 RUN go mod download
 
 COPY internal internal
+COPY middleware middleware
 COPY manifest manifest
 COPY *.go /app/
 
