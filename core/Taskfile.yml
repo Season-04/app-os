@@ -8,7 +8,11 @@ tasks:
       - protoc --proto_path=./schemas --go_opt=paths=source_relative --go_out=./internal/pb --go-grpc_out=./internal/pb --go-grpc_opt=paths=source_relative ./schemas/users.proto
 
   graphql:generate:
-    cmd: go run github.com/99designs/gqlgen generate
+    ignore_error: true
+    cmds:
+      - go run github.com/99designs/gqlgen generate
+      - gofmt -w -r '"errors" -> "github.com/pkg/errors"' internal/graph/*.go
+      - gofmt -w -r '"errors" -> "github.com/pkg/errors"' internal/graph/**/*.go
 
   docker:build:
     cmd: docker build -t appos-core .

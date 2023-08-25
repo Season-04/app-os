@@ -6,11 +6,11 @@ package graph
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"log"
 	"strconv"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/staugaard/app-os/core/internal/graph/model"
 	"github.com/staugaard/app-os/core/internal/pb"
 	"google.golang.org/protobuf/types/known/wrapperspb"

@@ -6,11 +6,22 @@ package graph
 
 import (
 	"context"
+
+	"github.com/staugaard/app-os/core/internal/graph/model"
 )
 
 // Version is the resolver for the version field.
 func (r *queryResolver) Version(ctx context.Context) (string, error) {
 	return "1.0", nil
+}
+
+// Viewer is the resolver for the viewer field.
+func (r *queryResolver) Viewer(ctx context.Context) (*model.User, error) {
+	currentUser := r.CurrentUser(ctx)
+	if currentUser == nil {
+		return nil, nil
+	}
+	return &model.User{User: currentUser}, nil
 }
 
 // Query returns QueryResolver implementation.
