@@ -49,6 +49,18 @@ func (s *Server) GetById(ctx context.Context, r *pb.GetUserByIdRequest) (*pb.Get
 	}, nil
 }
 
+func (s *Server) GetByEmailAndPassword(ctx context.Context, r *pb.GetByEmailAndPasswordRequest) (*pb.GetByEmailAndPasswordResponse, error) {
+	user := s.repo.GetUserByEmailAddressAndPassword(r.EmailAddress, r.Password)
+
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "There is no user with that email address and password")
+	}
+
+	return &pb.GetByEmailAndPasswordResponse{
+		User: userToProtobuf(user),
+	}, nil
+}
+
 func (s *Server) UpdateUser(ctx context.Context, r *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	user := s.repo.GetUserByID(r.Id)
 

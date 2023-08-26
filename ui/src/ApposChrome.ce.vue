@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-full">
     <div class="fixed inset-y-0 z-50 flex w-72 flex-col">
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
         <div class="flex h-16 shrink-0 items-center">
@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <main class="pl-72">
+    <main class="pl-72 h-full">
       <slot />
     </main>
   </div>

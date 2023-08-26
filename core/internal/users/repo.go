@@ -70,6 +70,28 @@ func (r *Repository) GetUserByID(ID uint32) *User {
 	return nil
 }
 
+func (r *Repository) GetUserByEmailAddress(emailAddress string) *User {
+	r.usersMutex.RLock()
+	defer r.usersMutex.RUnlock()
+
+	for _, user := range r.users {
+		if user.EmailAddress == emailAddress {
+			return user
+		}
+	}
+	return nil
+}
+
+func (r *Repository) GetUserByEmailAddressAndPassword(emailAddress string, password string) *User {
+	user := r.GetUserByEmailAddress(emailAddress)
+
+	if checkPassword(password, user.HashedPassword) {
+		return user
+	}
+
+	return nil
+}
+
 func (r *Repository) ListAll() []*User {
 	r.usersMutex.RLock()
 	defer r.usersMutex.RUnlock()

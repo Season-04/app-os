@@ -10,6 +10,7 @@ option go_package = "github.com/staugaard/app-os/core/pb";
 service UsersService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
   rpc GetById (GetUserByIdRequest) returns (GetUserByIdResponse);
+  rpc GetByEmailAndPassword (GetByEmailAndPasswordRequest) returns (GetByEmailAndPasswordResponse);
   rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
   rpc List (ListRequest) returns (ListResponse);
 }
@@ -30,6 +31,15 @@ message GetUserByIdRequest {
 }
 
 message GetUserByIdResponse {
+  User user = 1;
+}
+
+message GetByEmailAndPasswordRequest {
+  string email_address = 1;
+  string password = 2;
+}
+
+message GetByEmailAndPasswordResponse {
   User user = 1;
 }
 

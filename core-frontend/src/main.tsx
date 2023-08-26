@@ -7,9 +7,15 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import LoginPage from './auth/LoginPage.tsx'
 import UsersIndexPage from './users/IndexPage.tsx'
 
+
 const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
   {
     path: "/users",
     element: <UsersIndexPage />,

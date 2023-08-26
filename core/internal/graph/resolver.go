@@ -20,7 +20,7 @@ type Resolver struct {
 	currentUserOnce sync.Once
 }
 
-var errAccessDenied = errors.New("Access Denied")
+var ErrAccessDenied = errors.New("Access Denied")
 
 func NewResolver(UsersService pb.UsersServiceServer) *Resolver {
 	return &Resolver{

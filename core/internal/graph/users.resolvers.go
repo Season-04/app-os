@@ -6,11 +6,11 @@ package graph
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"log"
 	"strconv"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/staugaard/app-os/core/internal/graph/model"
 	"github.com/staugaard/app-os/core/internal/pb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -19,7 +19,7 @@ import (
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input *model.CreateUserInput) (*model.User, error) {
 	if currentUser := r.CurrentUser(ctx); currentUser == nil || currentUser.Role != pb.UserRole_USER_ROLE_ADMIN {
-		return nil, errAccessDenied
+		return nil, ErrAccessDenied
 	}
 
 	request := &pb.CreateUserRequest{
@@ -41,7 +41,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *model.CreateUs
 func (r *mutationResolver) UpdateUser(ctx context.Context, input *model.UpdateUserInput) (*model.User, error) {
 	currentUser := r.CurrentUser(ctx)
 	if currentUser == nil {
-		return nil, errors.Wrap(errAccessDenied, "Not Authenticated")
+		return nil, errors.Wrap(ErrAccessDenied, "Not Authenticated")
 	}
 
 	intId, err := strconv.ParseUint(input.ID, 10, 32)
@@ -50,7 +50,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input *model.UpdateUs
 	}
 
 	if currentUser.Role != pb.UserRole_USER_ROLE_ADMIN && currentUser.Id != uint32(intId) {
-		return nil, errors.Wrap(errAccessDenied, "Only admins can edit other users")
+		return nil, errors.Wrap(ErrAccessDenied, "Only admins can edit other users")
 	}
 
 	request := &pb.UpdateUserRequest{
@@ -63,7 +63,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input *model.UpdateUs
 
 	if input.Role != nil {
 		if currentUser.Role != pb.UserRole_USER_ROLE_ADMIN {
-			return nil, errors.Wrap(errAccessDenied, "You can not edit your wn role")
+			return nil, errors.Wrap(ErrAccessDenied, "You can not edit your wn role")
 		}
 		request.Role = model.RoleToProtobuf[*input.Role]
 	}
@@ -79,7 +79,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input *model.UpdateUs
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	if r.CurrentUserID(ctx) == 0 {
-		return nil, errAccessDenied
+		return nil, ErrAccessDenied
 	}
 
 	log.Println("Graph got user", r.CurrentUser(ctx))
@@ -98,7 +98,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
 	if r.CurrentUserID(ctx) == 0 {
-		return nil, errAccessDenied
+		return nil, ErrAccessDenied
 	}
 
 	intId, err := strconv.ParseUint(id, 10, 32)

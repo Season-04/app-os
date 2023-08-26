@@ -8,9 +8,11 @@ import (
 	"os"
 	"sync"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/docker/docker/client"
+	"github.com/pkg/errors"
 	"github.com/staugaard/app-os/core/internal/auth"
 	"github.com/staugaard/app-os/core/internal/config"
 	"github.com/staugaard/app-os/core/internal/graph"
@@ -18,6 +20,7 @@ import (
 	"github.com/staugaard/app-os/core/internal/users"
 	"github.com/staugaard/app-os/core/middleware"
 	"github.com/vektah/gqlparser/v2/formatter"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"google.golang.org/grpc"
 )
 
@@ -98,12 +101,27 @@ func runGRPC(usersServer pb.UsersServiceServer) {
 }
 
 func runHTTPServer(usersServer pb.UsersServiceServer) {
+	authServer := auth.NewServer(usersServer)
+
 	mux := http.NewServeMux()
 
 	resolver := graph.NewResolver(usersServer)
 	schema := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
 	srv := handler.NewDefaultServer(schema)
+	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
+		err := graphql.DefaultErrorPresenter(ctx, e)
 
+		if errors.Is(e, graph.ErrAccessDenied) {
+			err.Extensions = map[string]interface{}{
+				"type": "ACCESS_DENIED",
+			}
+		}
+
+		return err
+	})
+
+	mux.HandleFunc("/auth/login", authServer.Login)
+	mux.HandleFunc("/auth/logout", authServer.Logout)
 	mux.Handle("/api/core/graphiql", playground.Handler("GraphQL playground", "/api/core/graph"))
 	mux.Handle("/api/core/graph", middleware.ToContext(srv.ServeHTTP))
 	mux.HandleFunc("/api/core/graph/schema.graphql", func(w http.ResponseWriter, r *http.Request) {
