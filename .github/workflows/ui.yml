@@ -1,4 +1,4 @@
-name: Core
+name: UI
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -19,7 +19,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: season-04/app-os.core
+  IMAGE_NAME: season-04/app-os.ui
 
 jobs:
   build:
@@ -72,7 +72,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v4
         with:
-          context: ./core
+          context: ./ui
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
