@@ -30,7 +30,7 @@ tasks:
       - core:install
       - core-frontend:docker:rm
       - core-frontend:docker:build
-      # - core-frontend:install
+      - core-frontend:install
       - clock:docker:rm
       - clock:docker:build
       - clock:install

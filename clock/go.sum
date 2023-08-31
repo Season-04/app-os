@@ -1,5 +1,5 @@
-github.com/Season-04/appos/core v0.0.0-20230831101154-1092e840f865 h1:shwaO41SGtfSaOzyoR9fsPjcdr1aIbwvh3xE+aOIwSA=
-github.com/Season-04/appos/core v0.0.0-20230831101154-1092e840f865/go.mod h1:PMm6C1jAEGBtcivURLJw3PzKjKb+bx2n4mw3O0xDY2g=
+github.com/Season-04/appos/core v0.0.0-20230831112059-428a41aad074 h1:4I5ifHPVty7gdxDIQBPv4CMrABBDdt9vJv9CYUo+K40=
+github.com/Season-04/appos/core v0.0.0-20230831112059-428a41aad074/go.mod h1:aPB4hpD0Uc4Vlpm3heS1zHRSK4ShtTYMR+emq63/dCI=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/golang/protobuf v1.5.3 h1:KhyjKVUg7Usr/dYsdSqoFveMYd5ko72D+zANwlG1mmg=
 github.com/golang/protobuf v1.5.3/go.mod h1:XVQd3VNwM+JqD3oG2Ue2ip4fOMUkwXdXDdiuN0vRsmY=

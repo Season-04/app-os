@@ -19,7 +19,7 @@ tasks:
 
   docker:rm:
     cmds:
-      - docker container rm appos-traefik -f
+      - docker container rm appos.traefik -f
       - docker container rm appos.core -f
 
   docker:run:

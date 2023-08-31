@@ -85,6 +85,10 @@ func (r *Repository) GetUserByEmailAddress(emailAddress string) *User {
 func (r *Repository) GetUserByEmailAddressAndPassword(emailAddress string, password string) *User {
 	user := r.GetUserByEmailAddress(emailAddress)
 
+	if user == nil {
+		return nil
+	}
+
 	if checkPassword(password, user.HashedPassword) {
 		return user
 	}

@@ -110,7 +110,7 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 
 	containers, err := dockerClient.ContainerList(ctx, types.ContainerListOptions{
 		All:     true,
-		Filters: filters.NewArgs(filters.Arg("name", "appos-traefik")),
+		Filters: filters.NewArgs(filters.Arg("name", "appos.traefik")),
 	})
 	if err != nil {
 		return err
@@ -172,14 +172,14 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 			},
 			&network.NetworkingConfig{},
 			nil,
-			"appos-traefik",
+			"appos.traefik",
 		)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = dockerClient.ContainerRestart(ctx, "appos-traefik", container.StopOptions{})
+	err = dockerClient.ContainerRestart(ctx, "appos.traefik", container.StopOptions{})
 	if err != nil {
 		return err
 	}

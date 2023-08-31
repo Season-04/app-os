@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ClockService_GetTime_FullMethodName = "/appos.test.clock.ClockService/GetTime"
+	ClockService_GetTime_FullMethodName = "/appos.clock.ClockService/GetTime"
 )
 
 // ClockServiceClient is the client API for ClockService service.
@@ -96,7 +96,7 @@ func _ClockService_GetTime_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ClockService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "appos.test.clock.ClockService",
+	ServiceName: "appos.clock.ClockService",
 	HandlerType: (*ClockServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

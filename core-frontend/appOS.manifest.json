@@ -1,5 +1,5 @@
 {
-  "id": "appos.core.frontend",
+  "id": "appos.core-frontend",
   "name": "AppOS Core Frontend",
   "image": "appos-core-frontend",
   "routes": {
