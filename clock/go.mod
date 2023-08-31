@@ -1,9 +1,9 @@
-module github.com/Season-04/app-os/clock
+module github.com/Season-04/appos/clock
 
 go 1.20
 
 require (
-	github.com/Season-04/app-os/core v0.0.0-20230831101154-1092e840f865
+	github.com/Season-04/appos/core v0.0.0-20230831101154-1092e840f865
 	google.golang.org/grpc v1.56.2
 	google.golang.org/protobuf v1.31.0
 )

@@ -3,7 +3,7 @@ package users
 import (
 	"context"
 
-	"github.com/Season-04/app-os/core/internal/pb"
+	"github.com/Season-04/appos/core/internal/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"

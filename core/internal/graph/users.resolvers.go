@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Season-04/app-os/core/internal/graph/model"
-	"github.com/Season-04/app-os/core/internal/pb"
-	"github.com/Season-04/app-os/core/types"
+	"github.com/Season-04/appos/core/internal/graph/model"
+	"github.com/Season-04/appos/core/internal/pb"
+	"github.com/Season-04/appos/core/types"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )

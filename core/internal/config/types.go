@@ -3,7 +3,7 @@ package config
 import (
 	"sync"
 
-	"github.com/Season-04/app-os/core/manifest"
+	"github.com/Season-04/appos/core/manifest"
 )
 
 type Config struct {

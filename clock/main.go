@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Season-04/app-os/clock/pb"
-	"github.com/Season-04/app-os/core/middleware"
+	"github.com/Season-04/appos/clock/pb"
+	"github.com/Season-04/appos/core/middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

@@ -75,7 +75,7 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 					Hostname: manifest.ID,
 				},
 				&container.HostConfig{
-					NetworkMode: "app-os",
+					NetworkMode: "appos",
 					Mounts: []mount.Mount{
 						{
 							Type:   mount.TypeBind,
@@ -141,7 +141,7 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 				},
 			},
 			&container.HostConfig{
-				NetworkMode: "app-os",
+				NetworkMode: "appos",
 				PortBindings: nat.PortMap{
 					"80/tcp": []nat.PortBinding{
 						{

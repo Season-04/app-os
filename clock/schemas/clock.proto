@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package appos.test.clock;
-option go_package = "github.com/Season-04/app-os/clock/pb";
+option go_package = "github.com/Season-04/appos/clock/pb";
 
 import "google/protobuf/timestamp.proto";
 

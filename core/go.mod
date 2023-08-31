@@ -1,4 +1,4 @@
-module github.com/Season-04/app-os/core
+module github.com/Season-04/appos/core
 
 go 1.20
 

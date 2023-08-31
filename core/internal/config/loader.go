@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/Season-04/app-os/core/manifest"
+	"github.com/Season-04/appos/core/manifest"
 )
 
 func (cfg *Config) Load() error {

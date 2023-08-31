@@ -5,7 +5,7 @@ package appos.core;
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/Season-04/app-os/core/pb";
+option go_package = "github.com/Season-04/appos/core/pb";
 
 service UsersService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);

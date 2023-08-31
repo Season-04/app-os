@@ -18,9 +18,9 @@ includes:
 
 tasks:
   create-network:
-    cmd: docker network create app-os
+    cmd: docker network create appos
     status:
-      - docker network inspect app-os
+      - docker network inspect appos
 
   run:
     deps:

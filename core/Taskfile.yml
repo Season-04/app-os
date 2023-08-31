@@ -25,7 +25,7 @@ tasks:
   docker:run:
     cmds:
       - mkdir -p {{.CONFIG_DIR}}/app-data/appos.core
-      - docker run --volume {{.CONFIG_DIR}}:/config --volume {{.CONFIG_DIR}}/app-data/appos.core:/data --volume /var/run/docker.sock:/var/run/docker.sock:ro --network app-os --env CONFIG_DIR={{.CONFIG_DIR}} --name appos.core --rm appos-core
+      - docker run --volume {{.CONFIG_DIR}}:/config --volume {{.CONFIG_DIR}}/app-data/appos.core:/data --volume /var/run/docker.sock:/var/run/docker.sock:ro --network appos --env CONFIG_DIR={{.CONFIG_DIR}} --name appos.core --rm appos-core
     vars:
       CONFIG_DIR:
         sh: readlink -f ../config

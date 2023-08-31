@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/Season-04/app-os/core/internal/pb"
-	"github.com/Season-04/app-os/core/types"
+	"github.com/Season-04/appos/core/internal/pb"
+	"github.com/Season-04/appos/core/types"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -94,7 +94,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	claims := JWTClaims{
 		UserID: resp.User.Id,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "app-os",
+			Issuer:    "appos",
 			ExpiresAt: jwt.NewNumericDate(expiry),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
