@@ -4,10 +4,10 @@ import (
 	"context"
 	"sync"
 
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/pkg/errors"
 	"github.com/staugaard/app-os/core/internal/pb"
 	"github.com/staugaard/app-os/core/middleware"
+	"github.com/staugaard/app-os/core/types"
 )
 
 // This file will not be regenerated automatically.
@@ -29,25 +29,6 @@ func NewResolver(UsersService pb.UsersServiceServer) *Resolver {
 	}
 }
 
-func (r *Resolver) CurrentUserID(ctx context.Context) uint32 {
-	return middleware.UserIDFromContext(ctx)
-}
-
-func (r *Resolver) CurrentUser(ctx context.Context) *pb.User {
-	r.currentUserOnce.Do(func() {
-		userID := r.CurrentUserID(ctx)
-		if userID == 0 {
-			return
-		}
-
-		response, err := r.UsersService.GetById(ctx, &pb.GetUserByIdRequest{
-			Id: userID,
-		})
-		if err != nil {
-			graphql.AddError(ctx, err)
-			return
-		}
-		r.currentUser = response.User
-	})
-	return r.currentUser
+func (r *Resolver) CurrentUser(ctx context.Context) *types.User {
+	return middleware.UserFromContext(ctx)
 }

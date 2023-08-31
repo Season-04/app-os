@@ -2,24 +2,22 @@ package middleware
 
 import (
 	"context"
-	"fmt"
-	"log"
+	"encoding/json"
 	"net/http"
-	"strconv"
+
+	"github.com/staugaard/app-os/core/types"
 )
 
-const UserIDHeaderName = "X-AppOS-User-ID"
+const UserHeaderName = "X-AppOS-User"
 
 func ToContext(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userIDStr := r.Header.Get(UserIDHeaderName)
-
-		if userIDStr != "" {
-			userID, err := strconv.ParseUint(userIDStr, 10, 32)
-			if err != nil {
-				log.Println(fmt.Errorf("invalid user ID, %w", err))
-			} else {
-				r = r.WithContext(context.WithValue(r.Context(), UserIDHeaderName, uint32(userID)))
+		userStr := r.Header.Get(UserHeaderName)
+		if userStr != "" {
+			user := &types.User{}
+			err := json.Unmarshal([]byte(userStr), user)
+			if err == nil {
+				r = r.WithContext(context.WithValue(r.Context(), UserHeaderName, user))
 			}
 		}
 
@@ -27,11 +25,11 @@ func ToContext(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func UserIDFromContext(ctx context.Context) uint32 {
-	v := ctx.Value(UserIDHeaderName)
-	if userID, ok := v.(uint32); ok {
-		return userID
+func UserFromContext(ctx context.Context) *types.User {
+	v := ctx.Value(UserHeaderName)
+	if user, ok := v.(*types.User); ok {
+		return user
 	}
 
-	return 0
+	return nil
 }

@@ -6,19 +6,19 @@ package graph
 
 import (
 	"context"
-	"log"
 	"strconv"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/staugaard/app-os/core/internal/graph/model"
 	"github.com/staugaard/app-os/core/internal/pb"
+	"github.com/staugaard/app-os/core/types"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input *model.CreateUserInput) (*model.User, error) {
-	if currentUser := r.CurrentUser(ctx); currentUser == nil || currentUser.Role != pb.UserRole_USER_ROLE_ADMIN {
+	if currentUser := r.CurrentUser(ctx); currentUser == nil || currentUser.Role != types.UserRoleAdmin {
 		return nil, ErrAccessDenied
 	}
 
@@ -49,7 +49,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input *model.UpdateUs
 		return nil, nil
 	}
 
-	if currentUser.Role != pb.UserRole_USER_ROLE_ADMIN && currentUser.Id != uint32(intId) {
+	if currentUser.Role != types.UserRoleAdmin && currentUser.ID != uint32(intId) {
 		return nil, errors.Wrap(ErrAccessDenied, "Only admins can edit other users")
 	}
 
@@ -62,7 +62,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input *model.UpdateUs
 	}
 
 	if input.Role != nil {
-		if currentUser.Role != pb.UserRole_USER_ROLE_ADMIN {
+		if currentUser.Role != types.UserRoleAdmin {
 			return nil, errors.Wrap(ErrAccessDenied, "You can not edit your wn role")
 		}
 		request.Role = model.RoleToProtobuf[*input.Role]
@@ -78,11 +78,10 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input *model.UpdateUs
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	if r.CurrentUserID(ctx) == 0 {
+	if r.CurrentUser(ctx) == nil {
 		return nil, ErrAccessDenied
 	}
 
-	log.Println("Graph got user", r.CurrentUser(ctx))
 	response, err := r.UsersService.List(ctx, &pb.ListRequest{})
 	if err != nil {
 		return nil, err
@@ -97,7 +96,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	if r.CurrentUserID(ctx) == 0 {
+	if r.CurrentUser(ctx) == nil {
 		return nil, ErrAccessDenied
 	}
 

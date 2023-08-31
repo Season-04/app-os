@@ -8,6 +8,9 @@ import (
 	"context"
 
 	"github.com/staugaard/app-os/core/internal/graph/model"
+	"github.com/staugaard/app-os/core/internal/pb"
+	"github.com/staugaard/app-os/core/types"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Version is the resolver for the version field.
@@ -21,7 +24,29 @@ func (r *queryResolver) Viewer(ctx context.Context) (*model.User, error) {
 	if currentUser == nil {
 		return nil, nil
 	}
-	return &model.User{User: currentUser}, nil
+
+	user := &pb.User{
+		Id:           currentUser.ID,
+		Name:         currentUser.Name,
+		EmailAddress: currentUser.EmailAddress,
+		LastSeenAt: &timestamppb.Timestamp{
+			Seconds: 0,
+			Nanos:   0,
+		},
+	}
+
+	switch currentUser.Role {
+	case types.UserRoleAdmin:
+		user.Role = pb.UserRole_USER_ROLE_ADMIN
+	default:
+		user.Role = pb.UserRole_USER_ROLE_USER
+	}
+
+	if currentUser.LastSeenAt != nil {
+		user.LastSeenAt = timestamppb.New(*currentUser.LastSeenAt)
+	}
+
+	return &model.User{User: user}, nil
 }
 
 // Query returns QueryResolver implementation.

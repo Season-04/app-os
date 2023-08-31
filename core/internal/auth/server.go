@@ -1,14 +1,15 @@
 package auth
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/staugaard/app-os/core/internal/pb"
+	"github.com/staugaard/app-os/core/types"
 )
 
 type Server struct {
@@ -46,8 +47,26 @@ func (s *Server) check(w http.ResponseWriter, r *http.Request) {
 			log.Println("Failed to get user", err, "at path", r.Header.Get("X-Forwarded-Uri"))
 			w.WriteHeader(http.StatusOK)
 		} else {
-			log.Println("Got user", resp.User.Id, "at path", r.Header.Get("X-Forwarded-Uri"))
-			w.Header().Set("X-AppOS-User-ID", strconv.FormatUint(uint64(resp.User.Id), 10))
+			user := types.User{
+				ID:           resp.User.Id,
+				Name:         resp.User.Name,
+				EmailAddress: resp.User.EmailAddress,
+			}
+
+			switch resp.User.Role {
+			case pb.UserRole_USER_ROLE_ADMIN:
+				user.Role = types.UserRoleAdmin
+			default:
+				user.Role = types.UserRoleUser
+			}
+
+			if resp.User.LastSeenAt != nil {
+				t := resp.User.LastSeenAt.AsTime()
+				user.LastSeenAt = &t
+			}
+
+			jsonUser, _ := json.Marshal(user)
+			w.Header().Set("X-AppOS-User", string(jsonUser))
 			w.WriteHeader(http.StatusOK)
 		}
 	} else {

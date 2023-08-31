@@ -8,6 +8,7 @@ RUN go mod download
 
 COPY internal internal
 COPY middleware middleware
+COPY types types
 COPY manifest manifest
 COPY *.go /app/
 

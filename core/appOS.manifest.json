@@ -14,10 +14,7 @@
     "dependencies": []
   },
   "routes": {
-    "/auth/login": {
-      "port": 8081
-    },
-    "/auth/logout": {
+    "/auth": {
       "port": 8081
     },
     "/api/core": {
