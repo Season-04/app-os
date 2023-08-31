@@ -9,7 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/staugaard/app-os/clock/pb"
+	"github.com/Season-04/app-os/clock/pb"
+	"github.com/Season-04/app-os/core/middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -62,10 +63,14 @@ func runGRPC() {
 func runHTTPServer() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/clock", func(w http.ResponseWriter, r *http.Request) {
-		user := r.Header.Get("X-AppOS-User")
-		w.Write([]byte(fmt.Sprintf("User %v, it is %s", user, time.Now().String())))
-	})
+	mux.HandleFunc("/clock", middleware.ToContext(func(w http.ResponseWriter, r *http.Request) {
+		user := middleware.UserFromContext(r.Context())
+		if user == nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.Write([]byte(fmt.Sprintf("Hi %v, it is %s", user.Name, time.Now().String())))
+	}))
 
 	log.Printf("Listening HTTP at %v", 8081)
 

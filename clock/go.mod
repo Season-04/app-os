@@ -1,4 +1,4 @@
-module github.com/staugaard/app-os/clock
+module github.com/Season-04/app-os/clock
 
 go 1.20
 

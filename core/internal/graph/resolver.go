@@ -4,10 +4,10 @@ import (
 	"context"
 	"sync"
 
+	"github.com/Season-04/app-os/core/internal/pb"
+	"github.com/Season-04/app-os/core/middleware"
+	"github.com/Season-04/app-os/core/types"
 	"github.com/pkg/errors"
-	"github.com/staugaard/app-os/core/internal/pb"
-	"github.com/staugaard/app-os/core/middleware"
-	"github.com/staugaard/app-os/core/types"
 )
 
 // This file will not be regenerated automatically.

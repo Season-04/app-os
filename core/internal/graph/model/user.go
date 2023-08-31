@@ -3,7 +3,7 @@ package model
 import (
 	"strconv"
 
-	"github.com/staugaard/app-os/core/internal/pb"
+	"github.com/Season-04/app-os/core/internal/pb"
 )
 
 var RoleToProtobuf = map[UserRole]pb.UserRole{

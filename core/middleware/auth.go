@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/staugaard/app-os/core/types"
+	"github.com/Season-04/app-os/core/types"
 )
 
 const UserHeaderName = "X-AppOS-User"

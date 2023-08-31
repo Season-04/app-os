@@ -1,4 +1,4 @@
-module github.com/staugaard/app-os/core
+module github.com/Season-04/app-os/core
 
 go 1.20
 

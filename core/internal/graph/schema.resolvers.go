@@ -7,9 +7,9 @@ package graph
 import (
 	"context"
 
-	"github.com/staugaard/app-os/core/internal/graph/model"
-	"github.com/staugaard/app-os/core/internal/pb"
-	"github.com/staugaard/app-os/core/types"
+	"github.com/Season-04/app-os/core/internal/graph/model"
+	"github.com/Season-04/app-os/core/internal/pb"
+	"github.com/Season-04/app-os/core/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

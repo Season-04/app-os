@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/Season-04/app-os/core/internal/pb"
+	"github.com/Season-04/app-os/core/types"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/staugaard/app-os/core/internal/pb"
-	"github.com/staugaard/app-os/core/types"
 )
 
 type Server struct {
