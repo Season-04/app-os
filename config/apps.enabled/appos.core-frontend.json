@@ -1,7 +1,8 @@
 {
   "id": "appos.core-frontend",
   "name": "AppOS Core Frontend",
-  "image": "appos-core-frontend",
+  "image": "ghcr.io/season-04/appos.core-frontend:main",
+  "schemas": {},
   "routes": {
     "/": {
       "port": 80

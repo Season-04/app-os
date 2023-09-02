@@ -3,12 +3,18 @@ package config
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/Season-04/appos/core/manifest"
 )
 
 func (cfg *Config) Load() error {
+	err := os.MkdirAll(filepath.Join(cfg.Directory, "apps.enabled"), 0777)
+	if err != nil {
+		return err
+	}
+
 	files, err := filepath.Glob(filepath.Join(cfg.Directory, "apps.enabled/*.json"))
 	if err != nil {
 		return err
@@ -34,5 +40,5 @@ func (cfg *Config) Load() error {
 		}
 	}
 
-	return nil
+	return cfg.ensureRequestAppsAreEnabled()
 }

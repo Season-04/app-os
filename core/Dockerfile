@@ -14,6 +14,8 @@ COPY *.go /app/
 
 RUN go build -o /app/core .
 
+COPY appOS.manifest.json .
+
 EXPOSE 8080
 
 CMD [ "/app/core" ]

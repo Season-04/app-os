@@ -14,9 +14,9 @@ type Server struct {
 	repo *Repository
 }
 
-func NewServer() *Server {
+func NewServer(dataDir string) *Server {
 	return &Server{
-		repo: NewRepository("/data"),
+		repo: NewRepository(dataDir),
 	}
 }
 

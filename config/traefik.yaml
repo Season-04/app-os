@@ -1,0 +1,52 @@
+http:
+    routers:
+        /:
+            entryPoints:
+                - web
+            middlewares:
+                - appos-auth
+            service: appos.core-frontend-80
+            rule: PathPrefix(`/`)
+        /api/core:
+            entryPoints:
+                - web
+            middlewares:
+                - appos-auth
+            service: appos.core-8081
+            rule: PathPrefix(`/api/core`)
+        /appos-ui:
+            entryPoints:
+                - web
+            middlewares:
+                - appos-auth
+            service: appos.ui-3000
+            rule: PathPrefix(`/appos-ui`)
+        /auth:
+            entryPoints:
+                - web
+            middlewares:
+                - appos-auth
+            service: appos.core-8081
+            rule: PathPrefix(`/auth`)
+    services:
+        appos.core-8081:
+            loadBalancer:
+                servers:
+                    - url: http://appos.core:8081
+                passHostHeader: null
+        appos.core-frontend-80:
+            loadBalancer:
+                servers:
+                    - url: http://appos.core-frontend:80
+                passHostHeader: null
+        appos.ui-3000:
+            loadBalancer:
+                servers:
+                    - url: http://appos.ui:3000
+                passHostHeader: null
+    middlewares:
+        appos-auth:
+            forwardAuth:
+                address: http://appos.core:3000/auth/check
+                authResponseHeaders:
+                    - X-AppOS-User

@@ -10,14 +10,13 @@
         "port": 8080,
         "definition": "schemas/users.proto"
       }
-    ],
-    "dependencies": []
+    ]
   },
   "routes": {
-    "/auth": {
+    "/api/core": {
       "port": 8081
     },
-    "/api/core": {
+    "/auth": {
       "port": 8081
     }
   }

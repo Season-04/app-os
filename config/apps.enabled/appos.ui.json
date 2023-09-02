@@ -1,7 +1,8 @@
 {
   "id": "appos.ui",
   "name": "AppOS UI",
-  "image": "appos-ui",
+  "image": "ghcr.io/season-04/appos.ui:main",
+  "schemas": {},
   "routes": {
     "/appos-ui": {
       "port": 3000

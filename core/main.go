@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -31,7 +32,14 @@ func main() {
 	}
 
 	if mode == "server" {
-		usersServer := users.NewServer()
+		cfg := runCFG()
+
+		dataDir := filepath.Join(cfg.Directory, "app-data", "appos.core")
+		err := os.MkdirAll(dataDir, 0777)
+		if err != nil {
+			log.Fatalf("failed create data dir: %v", err)
+		}
+		usersServer := users.NewServer(dataDir)
 
 		var wg sync.WaitGroup
 
@@ -59,7 +67,7 @@ func main() {
 	}
 }
 
-func runCFG() {
+func runCFG() *config.Config {
 	configDirectory := os.Getenv("APP_OS_CONFIG_DIRECTORY")
 	if configDirectory == "" {
 		configDirectory = "/config"
@@ -80,6 +88,8 @@ func runCFG() {
 	if err != nil {
 		log.Fatalf("failed to run: %v", err)
 	}
+
+	return cfg
 }
 
 func runGRPC(usersServer pb.UsersServiceServer) {
@@ -101,6 +111,7 @@ func runGRPC(usersServer pb.UsersServiceServer) {
 }
 
 func runHTTPServer(usersServer pb.UsersServiceServer) {
+	runCFG()
 	authServer := auth.NewServer(usersServer)
 
 	mux := http.NewServeMux()

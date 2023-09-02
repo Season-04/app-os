@@ -4,13 +4,13 @@ type Manifest struct {
 	ID      string           `json:"id"`
 	Name    string           `json:"name"`
 	Image   string           `json:"image"`
-	Schemas Schemas          `json:"schemas"`
-	Routes  map[string]Route `json:"routes"`
+	Schemas Schemas          `json:"schemas,omitempty"`
+	Routes  map[string]Route `json:"routes,omitempty"`
 }
 
 type Schemas struct {
-	Provides     []ProvidedSchema `json:"provides"`
-	Dependencies []string         `json:"dependencies"`
+	Provides     []ProvidedSchema `json:"provides,omitempty"`
+	Dependencies []string         `json:"dependencies,omitempty"`
 }
 
 type ProvidedSchema struct {

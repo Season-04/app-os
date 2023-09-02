@@ -3,12 +3,10 @@ package config
 import (
 	"context"
 	"fmt"
-	"hash/crc32"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -17,6 +15,8 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/traefik/traefik/v2/pkg/config/dynamic"
+	"gopkg.in/yaml.v3"
 )
 
 type DockerClient interface {
@@ -33,7 +33,42 @@ func (cfg *Config) hostConfigDir() string {
 }
 
 func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
+	traefikConfig := &dynamic.Configuration{
+		HTTP: &dynamic.HTTPConfiguration{
+			Services: make(map[string]*dynamic.Service),
+			Routers:  make(map[string]*dynamic.Router),
+			Middlewares: map[string]*dynamic.Middleware{
+				"appos-auth": {
+					ForwardAuth: &dynamic.ForwardAuth{
+						Address:             "http://appos.core:3000/auth/check",
+						AuthResponseHeaders: []string{"X-AppOS-User"},
+					},
+				},
+			},
+		},
+	}
+
 	for _, manifest := range cfg.Manifests() {
+		for path, route := range manifest.Routes {
+			serviceName := fmt.Sprintf("%s-%v", manifest.ID, route.Port)
+			traefikConfig.HTTP.Services[serviceName] = &dynamic.Service{
+				LoadBalancer: &dynamic.ServersLoadBalancer{
+					Servers: []dynamic.Server{
+						{
+							URL: fmt.Sprintf("http://%s:%v", manifest.ID, route.Port),
+						},
+					},
+				},
+			}
+
+			traefikConfig.HTTP.Routers[path] = &dynamic.Router{
+				EntryPoints: []string{"web"},
+				Rule:        fmt.Sprintf("PathPrefix(`%s`)", path),
+				Service:     serviceName,
+				Middlewares: []string{"appos-auth"},
+			}
+		}
+
 		relativeAppDataPath := filepath.Join("app-data", manifest.ID)
 		err := os.MkdirAll(filepath.Join(cfg.Directory, relativeAppDataPath), 0777)
 		if err != nil {
@@ -48,22 +83,9 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 		}
 
 		if len(containers) == 0 {
-			// err = cfg.pullImage(ctx, dockerClient, manifest.ID)
-			// if err != nil {
-			// 	return err
-			// }
-
-			labels := map[string]string{}
-			for path, route := range manifest.Routes {
-				labels["traefik.enable"] = "true"
-				routeName := fmt.Sprintf("route%v", crc32.ChecksumIEEE([]byte(path)))
-				labels[fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port", routeName)] = strconv.FormatUint(uint64(route.Port), 10)
-				labels[fmt.Sprintf("traefik.http.routers.%s.entrypoints", routeName)] = "web"
-				labels[fmt.Sprintf("traefik.http.routers.%s.service", routeName)] = routeName
-				labels[fmt.Sprintf("traefik.http.routers.%s.rule", routeName)] = fmt.Sprintf("PathPrefix(`%s`)", path)
-				labels[fmt.Sprintf("traefik.http.routers.%s.middlewares", routeName)] = "appos-auth"
-				labels["traefik.http.middlewares.appos-auth.forwardauth.address"] = "http://appos.core:3000/auth/check"
-				labels["traefik.http.middlewares.appos-auth.forwardauth.authResponseHeaders"] = "X-AppOS-User"
+			err = cfg.pullImage(ctx, dockerClient, manifest.Image)
+			if err != nil {
+				return err
 			}
 
 			log.Println("Creating container for", manifest.ID)
@@ -71,7 +93,6 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 				ctx,
 				&container.Config{
 					Image:    manifest.Image,
-					Labels:   labels,
 					Hostname: manifest.ID,
 				},
 				&container.HostConfig{
@@ -93,19 +114,29 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 			}
 		}
 
-		// stats, err := dockerClient.ContainerInspect(ctx, manifest.ID)
-		// if err != nil {
-		// 	return err
-		// }
-
-		// if manifest.ID != "appos.core" {
-		// if !stats.State.Running || manifest.ID != "appos.core" {
-		log.Println("(Re)starting container for", manifest.ID)
-		err = dockerClient.ContainerRestart(ctx, manifest.ID, container.StopOptions{})
+		stats, err := dockerClient.ContainerInspect(ctx, manifest.ID)
 		if err != nil {
 			return err
 		}
-		// }
+
+		// if manifest.ID != "appos.core" {
+		if !stats.State.Running || manifest.ID != "appos.core" {
+			log.Println("(Re)starting container for", manifest.ID)
+			err = dockerClient.ContainerRestart(ctx, manifest.ID, container.StopOptions{})
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	traefikConfigBytes, err := yaml.Marshal(traefikConfig)
+	if err != nil {
+		return err
+	}
+	traefikConfigFilename := filepath.Join(cfg.Directory, "traefik.yaml")
+	err = os.WriteFile(traefikConfigFilename, traefikConfigBytes, 0777)
+	if err != nil {
+		return err
 	}
 
 	containers, err := dockerClient.ContainerList(ctx, types.ContainerListOptions{
@@ -129,8 +160,8 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 				Image: "traefik:v2.10",
 				Cmd: []string{
 					"--api.insecure=true",
-					"--providers.docker=true",
-					"--providers.docker.exposedByDefault=false",
+					"--providers.file=true",
+					"--providers.file.filename=/appos-config/traefik.yaml",
 					"--entrypoints.web.address=:80",
 					"--log.level=DEBUG",
 				},
@@ -165,8 +196,8 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 				Mounts: []mount.Mount{
 					{
 						Type:   mount.TypeBind,
-						Source: "/var/run/docker.sock",
-						Target: "/var/run/docker.sock",
+						Source: cfg.hostConfigDir(),
+						Target: "/appos-config",
 					},
 				},
 			},
