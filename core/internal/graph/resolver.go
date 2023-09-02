@@ -2,7 +2,6 @@ package graph
 
 import (
 	"context"
-	"sync"
 
 	"github.com/Season-04/appos/core/internal/pb"
 	"github.com/Season-04/appos/core/middleware"
@@ -15,17 +14,14 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	UsersService    pb.UsersServiceServer
-	currentUser     *pb.User
-	currentUserOnce sync.Once
+	UsersService pb.UsersServiceServer
 }
 
 var ErrAccessDenied = errors.New("Access Denied")
 
 func NewResolver(UsersService pb.UsersServiceServer) *Resolver {
 	return &Resolver{
-		UsersService:    UsersService,
-		currentUserOnce: sync.Once{},
+		UsersService: UsersService,
 	}
 }
 
