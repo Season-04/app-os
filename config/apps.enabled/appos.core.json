@@ -1,7 +1,7 @@
 {
   "id": "appos.core",
   "name": "AppOS Core",
-  "image": "appos-core",
+  "image": "ghcr.io/season-04/appos.core:main",
   "schemas": {
     "provides": [
       {
