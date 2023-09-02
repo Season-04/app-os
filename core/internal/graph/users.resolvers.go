@@ -82,7 +82,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 		return nil, ErrAccessDenied
 	}
 
-	response, err := r.UsersService.List(ctx, &pb.ListRequest{})
+	response, err := r.UsersService.ListUsers(ctx, &pb.ListUsersRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 		return nil, nil
 	}
 
-	response, err := r.UsersService.GetById(ctx, &pb.GetUserByIdRequest{Id: uint32(intId)})
+	response, err := r.UsersService.GetUserById(ctx, &pb.GetUserByIdRequest{Id: uint32(intId)})
 	if err != nil {
 		return nil, err
 	}

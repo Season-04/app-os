@@ -49,14 +49,14 @@ func (s *Server) GetById(ctx context.Context, r *pb.GetUserByIdRequest) (*pb.Get
 	}, nil
 }
 
-func (s *Server) GetByEmailAndPassword(ctx context.Context, r *pb.GetByEmailAndPasswordRequest) (*pb.GetByEmailAndPasswordResponse, error) {
+func (s *Server) GetByEmailAndPassword(ctx context.Context, r *pb.GetUserByEmailAndPasswordRequest) (*pb.GetUserByEmailAndPasswordResponse, error) {
 	user := s.repo.GetUserByEmailAddressAndPassword(r.EmailAddress, r.Password)
 
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "There is no user with that email address and password")
 	}
 
-	return &pb.GetByEmailAndPasswordResponse{
+	return &pb.GetUserByEmailAndPasswordResponse{
 		User: userToProtobuf(user),
 	}, nil
 }
@@ -86,9 +86,9 @@ func (s *Server) UpdateUser(ctx context.Context, r *pb.UpdateUserRequest) (*pb.U
 	}, nil
 }
 
-func (s *Server) List(ctx context.Context, r *pb.ListRequest) (*pb.ListResponse, error) {
+func (s *Server) List(ctx context.Context, r *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	users := s.repo.ListAll()
-	return &pb.ListResponse{Users: usersToProtobuf(users)}, nil
+	return &pb.ListUsersResponse{Users: usersToProtobuf(users)}, nil
 }
 
 var _ pb.UsersServiceServer = &Server{}

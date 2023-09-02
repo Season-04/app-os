@@ -9,10 +9,10 @@ option go_package = "github.com/Season-04/appos/core/pb";
 
 service UsersService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
-  rpc GetById (GetUserByIdRequest) returns (GetUserByIdResponse);
-  rpc GetByEmailAndPassword (GetByEmailAndPasswordRequest) returns (GetByEmailAndPasswordResponse);
+  rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdResponse);
+  rpc GetUserByEmailAndPassword (GetUserByEmailAndPasswordRequest) returns (GetUserByEmailAndPasswordResponse);
   rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
-  rpc List (ListRequest) returns (ListResponse);
+  rpc ListUsers (ListUsersRequest) returns (ListUsersResponse);
 }
 
 message CreateUserRequest {
@@ -34,12 +34,12 @@ message GetUserByIdResponse {
   User user = 1;
 }
 
-message GetByEmailAndPasswordRequest {
+message GetUserByEmailAndPasswordRequest {
   string email_address = 1;
   string password = 2;
 }
 
-message GetByEmailAndPasswordResponse {
+message GetUserByEmailAndPasswordResponse {
   User user = 1;
 }
 
@@ -53,9 +53,9 @@ message UpdateUserResponse {
   User user = 1;
 }
 
-message ListRequest {}
+message ListUsersRequest {}
 
-message ListResponse {
+message ListUsersResponse {
   repeated User users = 1;
 }
 

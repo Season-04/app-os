@@ -42,7 +42,7 @@ func (s *Server) check(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
-		resp, err := s.users.GetById(r.Context(), &pb.GetUserByIdRequest{Id: claims.UserID})
+		resp, err := s.users.GetUserById(r.Context(), &pb.GetUserByIdRequest{Id: claims.UserID})
 		if err != nil {
 			log.Println("Failed to get user", err, "at path", r.Header.Get("X-Forwarded-Uri"))
 			w.WriteHeader(http.StatusOK)
@@ -77,9 +77,9 @@ func (s *Server) check(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
-	resp, err := s.users.GetByEmailAndPassword(
+	resp, err := s.users.GetUserByEmailAndPassword(
 		r.Context(),
-		&pb.GetByEmailAndPasswordRequest{
+		&pb.GetUserByEmailAndPasswordRequest{
 			EmailAddress: r.FormValue("email"),
 			Password:     r.FormValue("password"),
 		},
