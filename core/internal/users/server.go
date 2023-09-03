@@ -37,7 +37,7 @@ func (s *Server) CreateUser(ctx context.Context, r *pb.CreateUserRequest) (*pb.C
 	}, nil
 }
 
-func (s *Server) GetById(ctx context.Context, r *pb.GetUserByIdRequest) (*pb.GetUserByIdResponse, error) {
+func (s *Server) GetUserById(ctx context.Context, r *pb.GetUserByIdRequest) (*pb.GetUserByIdResponse, error) {
 	user := s.repo.GetUserByID(r.Id)
 
 	if user == nil {
@@ -49,7 +49,7 @@ func (s *Server) GetById(ctx context.Context, r *pb.GetUserByIdRequest) (*pb.Get
 	}, nil
 }
 
-func (s *Server) GetByEmailAndPassword(ctx context.Context, r *pb.GetUserByEmailAndPasswordRequest) (*pb.GetUserByEmailAndPasswordResponse, error) {
+func (s *Server) GetUserByEmailAndPassword(ctx context.Context, r *pb.GetUserByEmailAndPasswordRequest) (*pb.GetUserByEmailAndPasswordResponse, error) {
 	user := s.repo.GetUserByEmailAddressAndPassword(r.EmailAddress, r.Password)
 
 	if user == nil {
@@ -86,7 +86,7 @@ func (s *Server) UpdateUser(ctx context.Context, r *pb.UpdateUserRequest) (*pb.U
 	}, nil
 }
 
-func (s *Server) List(ctx context.Context, r *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
+func (s *Server) ListUsers(ctx context.Context, r *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	users := s.repo.ListAll()
 	return &pb.ListUsersResponse{Users: usersToProtobuf(users)}, nil
 }

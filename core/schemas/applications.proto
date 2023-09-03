@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package appos.core;
+
+option go_package = "github.com/Season-04/appos/core/pb";
+
+service ApplicationsService {
+  rpc ListInstalledApplications (ListInstalledApplicationsRequest) returns (ListInstalledApplicationsResponse);
+}
+
+message ListInstalledApplicationsRequest {
+    
+}
+
+message ListInstalledApplicationsResponse {
+  repeated Application applications = 1;
+}
+
+message Application {
+  string id = 1;
+  string name = 2;
+}

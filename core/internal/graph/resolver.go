@@ -14,14 +14,19 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	UsersService pb.UsersServiceServer
+	UsersService        pb.UsersServiceServer
+	ApplicationsService pb.ApplicationsServiceServer
 }
 
 var ErrAccessDenied = errors.New("Access Denied")
 
-func NewResolver(UsersService pb.UsersServiceServer) *Resolver {
+func NewResolver(
+	UsersService pb.UsersServiceServer,
+	ApplicationsService pb.ApplicationsServiceServer,
+) *Resolver {
 	return &Resolver{
-		UsersService: UsersService,
+		UsersService:        UsersService,
+		ApplicationsService: ApplicationsService,
 	}
 }
 

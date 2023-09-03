@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/Season-04/appos/core/internal/applications"
 	"github.com/Season-04/appos/core/internal/auth"
 	"github.com/Season-04/appos/core/internal/config"
 	"github.com/Season-04/appos/core/internal/graph"
@@ -40,13 +41,14 @@ func main() {
 			log.Fatalf("failed create data dir: %v", err)
 		}
 		usersServer := users.NewServer(dataDir)
+		applicationsServer := applications.NewServer(cfg)
 
 		var wg sync.WaitGroup
 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			runGRPC(usersServer)
+			runGRPC(usersServer, applicationsServer)
 		}()
 
 		wg.Add(1)
@@ -58,7 +60,7 @@ func main() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			runHTTPServer(usersServer)
+			runHTTPServer(usersServer, applicationsServer)
 		}()
 
 		wg.Wait()
@@ -92,10 +94,14 @@ func runCFG() *config.Config {
 	return cfg
 }
 
-func runGRPC(usersServer pb.UsersServiceServer) {
+func runGRPC(
+	usersServer pb.UsersServiceServer,
+	applicationsServer pb.ApplicationsServiceServer,
+) {
 	s := grpc.NewServer()
 
 	pb.RegisterUsersServiceServer(s, usersServer)
+	pb.RegisterApplicationsServiceServer(s, applicationsServer)
 
 	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
@@ -110,13 +116,16 @@ func runGRPC(usersServer pb.UsersServiceServer) {
 	}
 }
 
-func runHTTPServer(usersServer pb.UsersServiceServer) {
+func runHTTPServer(
+	usersServer pb.UsersServiceServer,
+	applicationsServer pb.ApplicationsServiceServer,
+) {
 	runCFG()
 	authServer := auth.NewServer(usersServer)
 
 	mux := http.NewServeMux()
 
-	resolver := graph.NewResolver(usersServer)
+	resolver := graph.NewResolver(usersServer, applicationsServer)
 	schema := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
 	srv := handler.NewDefaultServer(schema)
 	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {

@@ -8,6 +8,11 @@ import (
 	"strconv"
 )
 
+type Application struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type CreateUserInput struct {
 	Name         string   `json:"name"`
 	EmailAddress string   `json:"emailAddress"`

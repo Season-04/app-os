@@ -1,0 +1,8 @@
+type Application {
+  id: ID!
+  name: String!
+}
+
+extend type Query {
+  installedApplications: [Application!]
+}

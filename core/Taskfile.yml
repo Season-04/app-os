@@ -5,7 +5,7 @@ version: '3'
 tasks:
   generate-protobuf:
     cmds:
-      - protoc --proto_path=./schemas --go_opt=paths=source_relative --go_out=./internal/pb --go-grpc_out=./internal/pb --go-grpc_opt=paths=source_relative ./schemas/users.proto
+      - protoc --proto_path=./schemas --go_opt=paths=source_relative --go_out=./internal/pb --go-grpc_out=./internal/pb --go-grpc_opt=paths=source_relative ./schemas/*.proto
 
   graphql:generate:
     ignore_error: true
