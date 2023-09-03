@@ -1,4 +1,4 @@
-FROM golang:1.20
+FROM golang:1.20 as builder
 
 WORKDIR /app
 
@@ -12,9 +12,16 @@ COPY types types
 COPY manifest manifest
 COPY *.go /app/
 
-RUN go build -o /app/core .
+RUN CGO_ENABLED=0 go build -o /app/core .
+
+
+FROM gcr.io/distroless/static as dist
+
+WORKDIR /app
 
 COPY appOS.manifest.json .
+
+COPY --from=builder /app/core .
 
 EXPOSE 8080
 
