@@ -6,8 +6,17 @@ tasks:
   docker:build:
     cmd: docker build -t appos-ui .
 
+  docker:build-dev:
+    cmd: docker build --target builder -t appos.ui-dev .
+
   docker:rm:
     cmd: docker container rm appos.ui -f
+
+  docker:run-dev:
+    deps:
+      - docker:build-dev
+      - docker:rm
+    cmd: docker run --network appos --name appos.ui --rm -it --mount type=bind,src=./src,dst=/app/src appos.ui-dev pnpm run preview --host 0.0.0.0 --port 3000
 
   install:
     cmd: cp appOS.manifest.json ../config/apps.enabled/appos.ui.json

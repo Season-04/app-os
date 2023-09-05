@@ -27,11 +27,11 @@ tasks:
       - create-network
       - core:docker:rm
       - core:docker:build
-      - core-frontend:docker:rm
+      # - core-frontend:docker:rm
       # - core-frontend:docker:build
-      - clock:docker:rm
+      # - clock:docker:rm
       # - clock:docker:build
-      - ui:docker:rm
+      # - ui:docker:rm
       # - ui:docker:build
     cmds:
       - task: core:docker:run

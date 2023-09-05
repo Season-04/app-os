@@ -13,41 +13,43 @@
           <ul role="list" class="flex flex-1 flex-col gap-y-7">
             <li>
               <ul role="list" class="-mx-2 space-y-1">
-                <li v-for="item in navigation" :key="item.name">
+                <li v-for="item in navigation" :key="item.href">
                   <a
                     :href="item.href"
                     :class="[
                       item.current
                         ? 'bg-gray-800 text-white'
                         : 'text-gray-400 hover:text-white hover:bg-gray-800',
-                      'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                      item.open && 'text-white',
+                      'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                     ]"
                   >
                     <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
                     {{ item.name }}
+                    <ChevronRightIcon
+                      v-if="item.children"
+                      :class="[
+                        item.open ? 'rotate-90 text-gray-400' : 'text-gray-500',
+                        'ml-auto h-5 w-5 shrink-0'
+                      ]"
+                      aria-hidden="true"
+                    />
                   </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div class="text-xs font-semibold leading-6 text-gray-400">Your teams</div>
-              <ul role="list" class="-mx-2 mt-2 space-y-1">
-                <li v-for="team in teams" :key="team.name">
-                  <a
-                    :href="team.href"
-                    :class="[
-                      team.current
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800',
-                      'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                    ]"
-                  >
-                    <span
-                      class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white"
-                      >{{ team.initial }}</span
-                    >
-                    <span class="truncate">{{ team.name }}</span>
-                  </a>
+                  <ul v-if="item.open && item.children" role="list" class="space-y-1">
+                    <li v-for="child in item.children" :key="child.href">
+                      <a
+                        :href="child.href"
+                        :class="[
+                          child.current
+                            ? 'bg-gray-800 text-white'
+                            : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                          'group flex gap-x-3 rounded-md p-2 pl-11 text-sm leading-6 font-semibold'
+                        ]"
+                      >
+                        {{ child.name }}
+                      </a>
+                    </li>
+                  </ul>
                 </li>
               </ul>
             </li>
@@ -83,31 +85,59 @@
 </style>
 
 <script setup lang="ts">
-import { HomeIcon, UsersIcon, ClockIcon } from '@heroicons/vue/24/outline'
+import {
+  ChevronRightIcon,
+  HomeIcon,
+  UsersIcon,
+  ClockIcon,
+  AdjustmentsHorizontalIcon
+} from '@heroicons/vue/24/outline'
 
-const isCurrentRoute = (path: string) => {
+const pathNameWithoutTrailingSlash = document.location.pathname.replace(/\/$/, '')
+
+const isCurrentRoute = (path: string, exact = false) => {
   if (document.location.pathname === path) {
     return true
   }
-
-  const pathNameWithoutTrailingSlash = document.location.pathname.replace(/\/$/, '')
 
   if (pathNameWithoutTrailingSlash === path) {
     return true
   }
 
-  return pathNameWithoutTrailingSlash.startsWith(path)
+  return !exact && pathNameWithoutTrailingSlash.startsWith(path)
 }
-console.log('c', document.location.pathname)
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: HomeIcon, current: document.location.pathname === '/' },
-  { name: 'Users', href: '/users', icon: UsersIcon, current: isCurrentRoute('/users') },
-  { name: 'Clock', href: '/clock', icon: ClockIcon, current: isCurrentRoute('/clock') }
-]
-const teams = [
-  { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
-  { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
-  { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false }
+  {
+    name: 'Dashboard',
+    href: '/',
+    icon: HomeIcon,
+    current: document.location.pathname === '/'
+  },
+  {
+    name: 'Clock',
+    href: '/clock',
+    icon: ClockIcon,
+    current: isCurrentRoute('/clock')
+  },
+  {
+    name: 'Settings',
+    href: '/settings',
+    icon: AdjustmentsHorizontalIcon,
+    current: isCurrentRoute('/settings', true),
+    open: isCurrentRoute('/settings', false),
+    children: [
+      {
+        name: 'Users',
+        href: '/settings/users',
+        current: isCurrentRoute('/settings/users')
+      },
+      {
+        name: 'Applications',
+        href: '/settings/applications',
+        current: isCurrentRoute('/settings/applications')
+      }
+    ]
+  }
 ]
 </script>

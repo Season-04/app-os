@@ -17,11 +17,11 @@ const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    path: "/users",
+    path: "/settings/users",
     element: <UsersIndexPage />,
   },
   {
-    path: "/users/:userId",
+    path: "/settings/users/:userId",
     element: <UsersIndexPage />
   }
 ]);

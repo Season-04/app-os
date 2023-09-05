@@ -57,7 +57,7 @@ export default function IndexPage() {
               {/* <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" /> */}
               <div className="min-w-0 flex-auto">
                 <p className="text-sm font-semibold leading-6 text-gray-900">
-                  <Link to={`/users/${user.id}`}>
+                  <Link to={`/settings/users/${user.id}`}>
                     <span className="absolute inset-x-0 -top-px bottom-0" />
                     {user.name}
                   </Link>
@@ -87,7 +87,7 @@ export default function IndexPage() {
       {selectedUser &&
         <EditUserModal
           user={selectedUser}
-          onClose={() => navigate("/users")}
+          onClose={() => navigate("/settings/users")}
         />
       }
 

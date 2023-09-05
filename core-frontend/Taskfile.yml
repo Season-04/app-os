@@ -4,10 +4,19 @@ version: '3'
 
 tasks:
   docker:build:
-    cmd: docker build -t appos-core-frontend .
+    cmd: docker build -t appos.core-frontend .
+
+  docker:build-dev:
+    cmd: docker build --target builder -t appos.core-frontend-dev .
 
   docker:rm:
     cmd: docker container rm appos.core-frontend -f
+
+  docker:run-dev:
+    deps:
+      - docker:build-dev
+      - docker:rm
+    cmd: docker run --network appos --name appos.core-frontend --rm -it --mount type=bind,src=./src,dst=/app/src appos.core-frontend-dev pnpm run dev --host 0.0.0.0 --port 80
 
   install:
     cmd: cp appOS.manifest.json ../config/apps.enabled/appos.core-frontend.json

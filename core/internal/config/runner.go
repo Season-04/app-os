@@ -33,42 +33,7 @@ func (cfg *Config) hostConfigDir() string {
 }
 
 func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
-	traefikConfig := &dynamic.Configuration{
-		HTTP: &dynamic.HTTPConfiguration{
-			Services: make(map[string]*dynamic.Service),
-			Routers:  make(map[string]*dynamic.Router),
-			Middlewares: map[string]*dynamic.Middleware{
-				"appos-auth": {
-					ForwardAuth: &dynamic.ForwardAuth{
-						Address:             "http://appos.core:3000/auth/check",
-						AuthResponseHeaders: []string{"X-AppOS-User"},
-					},
-				},
-			},
-		},
-	}
-
 	for _, manifest := range cfg.Manifests() {
-		for path, route := range manifest.Routes {
-			serviceName := fmt.Sprintf("%s-%v", manifest.ID, route.Port)
-			traefikConfig.HTTP.Services[serviceName] = &dynamic.Service{
-				LoadBalancer: &dynamic.ServersLoadBalancer{
-					Servers: []dynamic.Server{
-						{
-							URL: fmt.Sprintf("http://%s:%v", manifest.ID, route.Port),
-						},
-					},
-				},
-			}
-
-			traefikConfig.HTTP.Routers[path] = &dynamic.Router{
-				EntryPoints: []string{"web"},
-				Rule:        fmt.Sprintf("PathPrefix(`%s`)", path),
-				Service:     serviceName,
-				Middlewares: []string{"appos-auth"},
-			}
-		}
-
 		relativeAppDataPath := filepath.Join("app-data", manifest.ID)
 		err := os.MkdirAll(filepath.Join(cfg.Directory, relativeAppDataPath), 0777)
 		if err != nil {
@@ -120,11 +85,75 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 		}
 
 		// if manifest.ID != "appos.core" {
-		if !stats.State.Running || manifest.ID != "appos.core" {
+		if !stats.State.Running {
 			log.Println("(Re)starting container for", manifest.ID)
 			err = dockerClient.ContainerRestart(ctx, manifest.ID, container.StopOptions{})
 			if err != nil {
 				return err
+			}
+		}
+	}
+
+	return cfg.updateTraefik(ctx, dockerClient)
+}
+
+func (cfg *Config) pullImage(ctx context.Context, dockerClient DockerClient, image string) error {
+	images, err := dockerClient.ImageList(ctx, types.ImageListOptions{
+		Filters: filters.NewArgs(filters.Arg("reference", image)),
+	})
+	if err != nil {
+		return err
+	}
+
+	if len(images) > 0 {
+		log.Println("got image")
+		return nil
+	}
+
+	log.Println("Pulling image", image)
+	r, err := dockerClient.ImagePull(ctx, image, types.ImagePullOptions{})
+	if err != nil {
+		return err
+	}
+
+	_, err = io.ReadAll(r)
+	return err
+}
+
+func (cfg *Config) updateTraefik(ctx context.Context, dockerClient DockerClient) error {
+	traefikConfig := &dynamic.Configuration{
+		HTTP: &dynamic.HTTPConfiguration{
+			Services: make(map[string]*dynamic.Service),
+			Routers:  make(map[string]*dynamic.Router),
+			Middlewares: map[string]*dynamic.Middleware{
+				"appos-auth": {
+					ForwardAuth: &dynamic.ForwardAuth{
+						Address:             "http://appos.core:3000/auth/check",
+						AuthResponseHeaders: []string{"X-AppOS-User"},
+					},
+				},
+			},
+		},
+	}
+
+	for _, manifest := range cfg.Manifests() {
+		for path, route := range manifest.Routes {
+			serviceName := fmt.Sprintf("%s-%v", manifest.ID, route.Port)
+			traefikConfig.HTTP.Services[serviceName] = &dynamic.Service{
+				LoadBalancer: &dynamic.ServersLoadBalancer{
+					Servers: []dynamic.Server{
+						{
+							URL: fmt.Sprintf("http://%s:%v", manifest.ID, route.Port),
+						},
+					},
+				},
+			}
+
+			traefikConfig.HTTP.Routers[path] = &dynamic.Router{
+				EntryPoints: []string{"web"},
+				Rule:        fmt.Sprintf("PathPrefix(`%s`)", path),
+				Service:     serviceName,
+				Middlewares: []string{"appos-auth"},
 			}
 		}
 	}
@@ -210,34 +239,5 @@ func (cfg *Config) Run(ctx context.Context, dockerClient DockerClient) error {
 		}
 	}
 
-	err = dockerClient.ContainerRestart(ctx, "appos.traefik", container.StopOptions{})
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (cfg *Config) pullImage(ctx context.Context, dockerClient DockerClient, image string) error {
-	images, err := dockerClient.ImageList(ctx, types.ImageListOptions{
-		Filters: filters.NewArgs(filters.Arg("reference", image)),
-	})
-	log.Println("images", images, len(images))
-	if err != nil {
-		return err
-	}
-
-	if len(images) > 0 {
-		log.Println("got image")
-		return nil
-	}
-
-	log.Println("Pulling image", image)
-	r, err := dockerClient.ImagePull(ctx, image, types.ImagePullOptions{})
-	if err != nil {
-		return err
-	}
-
-	_, err = io.ReadAll(r)
-	return err
+	return dockerClient.ContainerRestart(ctx, "appos.traefik", container.StopOptions{})
 }
