@@ -25,7 +25,7 @@ func (cfg *Config) requiredManifests() ([]manifest.Manifest, error) {
 		{
 			ID:    "appos.core-frontend",
 			Name:  "AppOS Core Frontend",
-			Image: "ghcr.io/season-04/appos.core-frontend:main",
+			Image: "ghcr.io/season-04/appos.core-frontend",
 			Routes: map[string]manifest.Route{
 				"/": {
 					Port: 80,
@@ -35,7 +35,7 @@ func (cfg *Config) requiredManifests() ([]manifest.Manifest, error) {
 		{
 			ID:    "appos.ui",
 			Name:  "AppOS UI",
-			Image: "ghcr.io/season-04/appos.ui:main",
+			Image: "ghcr.io/season-04/appos.ui",
 			Routes: map[string]manifest.Route{
 				"/appos-ui": {
 					Port: 3000,

@@ -1,7 +1,7 @@
 {
   "id": "appos.clock",
   "name": "Test Clock",
-  "image": "ghcr.io/season-04/appos.clock:main",
+  "image": "ghcr.io/season-04/appos.clock",
   "schemas": {
     "provides": [
       {
