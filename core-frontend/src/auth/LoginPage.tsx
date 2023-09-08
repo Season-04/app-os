@@ -1,5 +1,7 @@
 export default function IndexPage() {
-  const returnTo = new URL(document.location.toString()).searchParams.get('returnTo')
+  const returnTo = new URL(document.location.toString()).searchParams.get(
+    'returnTo'
+  )
   return (
     <div className="flex min-h-full h-full flex-1 flex-col py-12 sm:px-6 lg:px-8 bg-gray-50">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -16,9 +18,14 @@ export default function IndexPage() {
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
         <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
           <form className="space-y-6" action="/auth/login" method="POST">
-            {returnTo && <input type="hidden" name="returnTo" value={returnTo} />}
+            {returnTo && (
+              <input type="hidden" name="returnTo" value={returnTo} />
+            )}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
                 Email address
               </label>
               <div className="mt-2">
@@ -34,7 +41,10 @@ export default function IndexPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
                 Password
               </label>
               <div className="mt-2">
@@ -57,13 +67,19 @@ export default function IndexPage() {
                   type="checkbox"
                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                 />
-                <label htmlFor="remember-me" className="ml-3 block text-sm leading-6 text-gray-900">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-3 block text-sm leading-6 text-gray-900"
+                >
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm leading-6">
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                <a
+                  href="#"
+                  className="font-semibold text-indigo-600 hover:text-indigo-500"
+                >
                   Forgot password?
                 </a>
               </div>

@@ -13,10 +13,11 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n  query getInstalledApplications {\n    installedApplications {\n      id\n      name\n    }\n  }\n": types.GetInstalledApplicationsDocument,
     "\n  fragment EditUserFragment on User {\n    id\n    name\n    emailAddress\n    role\n  }\n": types.EditUserFragmentFragmentDoc,
-    "\n  mutation UpdateUserMutation(\n    $id: ID!,\n    $name: String!\n    $role: UserRole!\n  ) {\n    updateUser(input: {id: $id, name: $name, role: $role}) {\n      ...EditUserFragment\n    }\n  }\n": types.UpdateUserMutationDocument,
+    "\n  mutation UpdateUserMutation($id: ID!, $name: String!, $role: UserRole!) {\n    updateUser(input: { id: $id, name: $name, role: $role }) {\n      ...EditUserFragment\n    }\n  }\n": types.UpdateUserMutationDocument,
     "\n  query GetUsers {\n    users {\n      id\n      name\n      emailAddress\n      role\n      lastSeenAt\n      ...EditUserFragment\n    }\n  }\n": types.GetUsersDocument,
-    "\n  mutation CreateUserMutation(\n    $name: String!\n    $emailAddress: String!\n    $role: UserRole!\n    $password: String!\n  ) {\n    createUser(input: {\n      name: $name,\n      emailAddress: $emailAddress,\n      role: $role,\n      password: $password\n    }) {\n      id\n    }\n  }\n": types.CreateUserMutationDocument,
+    "\n  mutation CreateUserMutation(\n    $name: String!\n    $emailAddress: String!\n    $role: UserRole!\n    $password: String!\n  ) {\n    createUser(\n      input: {\n        name: $name\n        emailAddress: $emailAddress\n        role: $role\n        password: $password\n      }\n    ) {\n      id\n    }\n  }\n": types.CreateUserMutationDocument,
 };
 
 /**
@@ -36,11 +37,15 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query getInstalledApplications {\n    installedApplications {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query getInstalledApplications {\n    installedApplications {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  fragment EditUserFragment on User {\n    id\n    name\n    emailAddress\n    role\n  }\n"): (typeof documents)["\n  fragment EditUserFragment on User {\n    id\n    name\n    emailAddress\n    role\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation UpdateUserMutation(\n    $id: ID!,\n    $name: String!\n    $role: UserRole!\n  ) {\n    updateUser(input: {id: $id, name: $name, role: $role}) {\n      ...EditUserFragment\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateUserMutation(\n    $id: ID!,\n    $name: String!\n    $role: UserRole!\n  ) {\n    updateUser(input: {id: $id, name: $name, role: $role}) {\n      ...EditUserFragment\n    }\n  }\n"];
+export function graphql(source: "\n  mutation UpdateUserMutation($id: ID!, $name: String!, $role: UserRole!) {\n    updateUser(input: { id: $id, name: $name, role: $role }) {\n      ...EditUserFragment\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateUserMutation($id: ID!, $name: String!, $role: UserRole!) {\n    updateUser(input: { id: $id, name: $name, role: $role }) {\n      ...EditUserFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -48,7 +53,7 @@ export function graphql(source: "\n  query GetUsers {\n    users {\n      id\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation CreateUserMutation(\n    $name: String!\n    $emailAddress: String!\n    $role: UserRole!\n    $password: String!\n  ) {\n    createUser(input: {\n      name: $name,\n      emailAddress: $emailAddress,\n      role: $role,\n      password: $password\n    }) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateUserMutation(\n    $name: String!\n    $emailAddress: String!\n    $role: UserRole!\n    $password: String!\n  ) {\n    createUser(input: {\n      name: $name,\n      emailAddress: $emailAddress,\n      role: $role,\n      password: $password\n    }) {\n      id\n    }\n  }\n"];
+export function graphql(source: "\n  mutation CreateUserMutation(\n    $name: String!\n    $emailAddress: String!\n    $role: UserRole!\n    $password: String!\n  ) {\n    createUser(\n      input: {\n        name: $name\n        emailAddress: $emailAddress\n        role: $role\n        password: $password\n      }\n    ) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateUserMutation(\n    $name: String!\n    $emailAddress: String!\n    $role: UserRole!\n    $password: String!\n  ) {\n    createUser(\n      input: {\n        name: $name\n        emailAddress: $emailAddress\n        role: $role\n        password: $password\n      }\n    ) {\n      id\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

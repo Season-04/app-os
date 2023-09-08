@@ -1,32 +1,38 @@
+type Application {
+  id: ID!
+  name: String!
+}
 input CreateUserInput {
-	name: String!
-	emailAddress: String!
-	password: String!
-	role: UserRole!
+  name: String!
+  emailAddress: String!
+  password: String!
+  role: UserRole!
 }
 type Mutation {
-	createUser(input: CreateUserInput): User
-	updateUser(input: UpdateUserInput): User
+  createUser(input: CreateUserInput): User
+  updateUser(input: UpdateUserInput): User
 }
 type Query {
-	version: String!
-	users: [User!]
-	user(id: ID!): User
+  version: String!
+  viewer: User
+  installedApplications: [Application!]
+  users: [User!]
+  user(id: ID!): User
 }
 scalar Time
 input UpdateUserInput {
-	id: ID!
-	name: String
-	role: UserRole
+  id: ID!
+  name: String
+  role: UserRole
 }
 type User {
-	id: ID!
-	name: String!
-	emailAddress: String!
-	role: UserRole!
-	lastSeenAt: Time
+  id: ID!
+  name: String!
+  emailAddress: String!
+  role: UserRole!
+  lastSeenAt: Time
 }
 enum UserRole {
-	ADMIN
-	USER
+  ADMIN
+  USER
 }

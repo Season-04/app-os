@@ -106,7 +106,6 @@ func (cfg *Config) pullImage(ctx context.Context, dockerClient DockerClient, ima
 	}
 
 	if len(images) > 0 {
-		log.Println("got image")
 		return nil
 	}
 
